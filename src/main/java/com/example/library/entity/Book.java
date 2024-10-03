@@ -22,9 +22,6 @@ public class Book {
     String title;
     Integer publicationYear;
     Integer price;
-    Integer totalCopies;
-    Integer availableCopies;
-
     @ManyToOne
     Publisher  publisher;
 

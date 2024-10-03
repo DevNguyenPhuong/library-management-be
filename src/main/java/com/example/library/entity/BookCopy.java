@@ -1,11 +1,9 @@
 package com.example.library.entity;
 
-import com.example.library.constant.LoanStatus;
+import com.example.library.constant.BookStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,28 +12,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Loan {
+public class BookCopy {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    LocalDate loanDate;
-    LocalDate dueDate;
-    LocalDate returnDate;
-
     @Enumerated(EnumType.STRING)
-    LoanStatus status;
+    BookStatus status;
 
     @ManyToOne
-    BookCopy  bookCopy;
-
-    @ManyToOne
-    User  user;
-
-    @ManyToOne
-    Patron  patron;
-
-    @OneToOne
-    @JoinColumn(nullable = true)
-    private Fine fine;
+    Book book;
 }
