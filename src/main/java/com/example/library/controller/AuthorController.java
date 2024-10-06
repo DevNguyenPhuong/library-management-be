@@ -34,6 +34,21 @@ public class AuthorController {
                 .build();
     }
 
+    @GetMapping("/{authorID}")
+    ApiResponse<AuthorResponse> getDetails(@PathVariable String authorID) {
+        return ApiResponse.<AuthorResponse>builder()
+                .result(authorService.getDetails(authorID))
+                .build();
+    }
+
+    @PutMapping("/{authorID}")
+    ApiResponse<AuthorResponse> update(@PathVariable String authorID, @RequestBody AuthorRequest request) {
+        return ApiResponse.<AuthorResponse>builder()
+                .result(authorService.update(authorID, request))
+                .build();
+    }
+
+
     @DeleteMapping("/{authorID}")
     ApiResponse<Void> delete(@PathVariable String authorID) {
         authorService.delete(authorID);

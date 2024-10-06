@@ -20,7 +20,4 @@ public class Publisher {
     String id;
     String name;
     String address;
-
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Book> books;
 }

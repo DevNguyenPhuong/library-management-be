@@ -17,6 +17,9 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_FOUND(1009, "Category is not exist", HttpStatus.NOT_FOUND),
     AUTHOR_NOT_FOUND(1010, "Author is not exist", HttpStatus.NOT_FOUND),
+    PUBLISHER_NOT_FOUND(1011, "Publisher is not exist", HttpStatus.NOT_FOUND),
+    BOOK_NOT_FOUND(1012, "Book is not exist", HttpStatus.NOT_FOUND),
+    BOOK_ALREADY_EXISTS(1013, "Book is already exist", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

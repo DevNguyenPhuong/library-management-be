@@ -10,6 +10,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AuthorMapper {
     Author toAuthor(AuthorRequest request);
+
+    @Mapping(target = "id", source = "id")
     AuthorResponse toAuthorResponse(Author author);
 
     @Mapping(target = "id", ignore = true)
