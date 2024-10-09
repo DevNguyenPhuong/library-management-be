@@ -24,5 +24,4 @@ public class FineService {
         Fine fine = fineMapper.toFine(fineRequest);
         return fineMapper.toFineResponse(fineRepository.save(fine));
     }
-
 }
