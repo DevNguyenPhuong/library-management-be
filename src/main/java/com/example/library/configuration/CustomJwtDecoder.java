@@ -1,7 +1,7 @@
 package com.example.library.configuration;
 
-import com.example.library.dto.request.IntrospectRequest;
-import com.example.library.service.AuthenticationService;
+import com.example.library.dto.authentication.IntrospectRequest;
+import com.example.library.authentication.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,10 +1,10 @@
 package com.example.library.configuration;
 
 import com.example.library.constant.PredefinedRole;
-import com.example.library.entity.Role;
-import com.example.library.entity.User;
-import com.example.library.repository.RoleRepository;
-import com.example.library.repository.UserRepository;
+import com.example.library.role.Role;
+import com.example.library.user.User;
+import com.example.library.role.RoleRepository;
+import com.example.library.user.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

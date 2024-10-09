@@ -1,6 +1,6 @@
 package com.example.library.configuration;
 
-import com.example.library.dto.response.ApiResponse;
+import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
