@@ -17,6 +17,7 @@ import java.util.Set;
 public class BookResponse {
     String id;
     String title;
+    String isbn;
     Integer publicationYear;
     Integer price;
     PublisherSimpleResponse publisher;

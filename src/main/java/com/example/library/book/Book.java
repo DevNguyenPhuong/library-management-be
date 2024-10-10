@@ -22,6 +22,9 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Column(unique = true)
+    String isbn;
+
     String title;
     Integer publicationYear;
     Integer price;

@@ -3,6 +3,7 @@ package com.example.library.author;
 import com.example.library.dto.author.AuthorRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.author.AuthorResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ public class AuthorController {
     AuthorService authorService;
 
     @PostMapping
-    ApiResponse<AuthorResponse> create(@RequestBody AuthorRequest request) {
+    ApiResponse<AuthorResponse> create(@RequestBody @Valid AuthorRequest request) {
         return ApiResponse.<AuthorResponse>builder()
                 .result(authorService.create(request))
                 .build();
@@ -41,7 +42,7 @@ public class AuthorController {
     }
 
     @PutMapping("/{authorID}")
-    ApiResponse<AuthorResponse> update(@PathVariable String authorID, @RequestBody AuthorRequest request) {
+    ApiResponse<AuthorResponse> update(@PathVariable @Valid String authorID, @RequestBody AuthorRequest request) {
         return ApiResponse.<AuthorResponse>builder()
                 .result(authorService.update(authorID, request))
                 .build();

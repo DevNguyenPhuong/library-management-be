@@ -5,6 +5,7 @@ import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.loan.LoanResponse;
 import com.example.library.dto.patron.PatronResponse;
 import com.example.library.loan.LoanService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,14 +38,14 @@ public class PatronController {
     }
 
     @PostMapping
-    ApiResponse<PatronResponse> addPatron(@RequestBody PatronRequest request) {
+    ApiResponse<PatronResponse> createPatron(@RequestBody @Valid PatronRequest request) {
         return ApiResponse.<PatronResponse>builder()
                 .result(patronService.create(request))
                 .build();
     }
 
     @PutMapping("/{patronId}")
-    ApiResponse<PatronResponse> updatePatron(@PathVariable String patronId, @RequestBody PatronRequest request) {
+    ApiResponse<PatronResponse> updatePatron(@PathVariable @Valid String patronId, @RequestBody PatronRequest request) {
         return ApiResponse.<PatronResponse>builder()
                 .result(patronService.updatePatron(patronId, request))
                 .build();

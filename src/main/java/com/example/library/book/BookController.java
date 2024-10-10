@@ -5,6 +5,7 @@ import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.bookCopy.BookCopyService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,20 +38,20 @@ public class BookController {
     }
 
     @PostMapping
-    ApiResponse<BookResponse> create(@RequestBody BookRequest request) {
+    ApiResponse<BookResponse> create(@RequestBody @Valid BookRequest request) {
         return ApiResponse.<BookResponse>builder()
                 .result(bookService.create(request))
                 .build();
     }
 
     @PutMapping("/{bookID}")
-    ApiResponse<BookResponse> update(@RequestBody BookRequest request, @PathVariable String bookID) {
+    ApiResponse<BookResponse> update(@RequestBody @Valid BookRequest request, @PathVariable String bookID) {
         return ApiResponse.<BookResponse>builder()
                 .result(bookService.update(request, bookID))
                 .build();
     }
 
-    @DeleteMapping("/{bookID}/copies")
+    @DeleteMapping("/{bookID}")
     ApiResponse<Void> delete(@PathVariable String bookID) {
         bookService.delete(bookID);
         return ApiResponse.<Void>builder().build();

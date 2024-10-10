@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,12 @@ public class PublisherService {
 
     public PublisherResponse create(PublisherRequest request) {
         Publisher publisher = publisherMapper.toPublisher(request);
-        publisher = publisherRepository.save(publisher);
+        try {
+            publisher = publisherRepository.save(publisher);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new AppException(ErrorCode.PUBLISHER_ALREADY_EXISTS);
+        }
         return publisherMapper.toPublisherResponse(publisher);
     }
 

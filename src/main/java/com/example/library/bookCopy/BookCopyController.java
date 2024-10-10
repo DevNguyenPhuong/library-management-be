@@ -4,6 +4,7 @@ package com.example.library.bookCopy;
 import com.example.library.dto.bookCopy.CreationBookCopiesRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +22,7 @@ public class BookCopyController {
     BookCopyService bookCopyService;
 
     @PostMapping
-    ApiResponse<List<BookCopyResponse>> createCopies( @RequestBody CreationBookCopiesRequest request) {
+    ApiResponse<List<BookCopyResponse>> createCopies(@RequestBody @Valid CreationBookCopiesRequest request) {
         return ApiResponse.<List<BookCopyResponse>>builder()
                 .result(bookCopyService.createCopies(request))
                 .build();

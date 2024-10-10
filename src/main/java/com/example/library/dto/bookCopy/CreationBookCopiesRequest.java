@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreationBookCopiesRequest {
-    @Min(1)
+    @Min(value = 1, message = "INVALID_COPIES")
     int numberOfCopies;
     String bookId;
 }

@@ -3,6 +3,7 @@ package com.example.library.publisher;
 import com.example.library.dto.publisher.PublisherRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.publisher.PublisherResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ public class PublisherController {
     PublisherService publisherService;
 
     @PostMapping
-    ApiResponse<PublisherResponse> create(@RequestBody PublisherRequest request) {
+    ApiResponse<PublisherResponse> create(@RequestBody @Valid PublisherRequest request) {
         return ApiResponse.<PublisherResponse>builder()
                 .result(publisherService.create(request))
                 .build();
@@ -34,7 +35,7 @@ public class PublisherController {
     }
 
     @PutMapping("/{publisherID}")
-    ApiResponse<PublisherResponse> update(@PathVariable String publisherID, @RequestBody PublisherRequest request) {
+    ApiResponse<PublisherResponse> update(@PathVariable @Valid String publisherID, @RequestBody PublisherRequest request) {
         return ApiResponse.<PublisherResponse>builder()
                 .result(publisherService.update(publisherID, request))
                 .build();

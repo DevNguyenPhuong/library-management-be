@@ -16,6 +16,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Column(unique = true)
     String name;
 
     @Column(columnDefinition = "TEXT")

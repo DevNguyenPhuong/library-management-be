@@ -3,6 +3,7 @@ package com.example.library.loan;
 import com.example.library.dto.loan.LoanRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.loan.LoanResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,14 +19,14 @@ public class LoanController {
     LoanService loanService;
 
     @PostMapping
-    public ApiResponse<LoanResponse> loan(@RequestBody LoanRequest request) {
+    public ApiResponse<LoanResponse> loan(@RequestBody @Valid LoanRequest request) {
         return ApiResponse.<LoanResponse>builder()
                 .result(loanService.create(request))
                 .build();
     }
 
     @PutMapping("/{loanId}")
-    public ApiResponse<LoanResponse> updateLoan(@PathVariable String loanId, @RequestBody LoanRequest request) {
+    public ApiResponse<LoanResponse> updateLoan(@PathVariable @Valid String loanId, @RequestBody LoanRequest request) {
         return  ApiResponse.<LoanResponse>builder()
                 .result(loanService.update(request, loanId))
                 .build();

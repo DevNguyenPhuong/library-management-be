@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,12 @@ public class CategoryService {
 
     public CategoryResponse create(CategoryRequest request) {
         Category category = categoryMapper.toCategory(request);
-        category = categoryRepository.save(category);
+
+        try {
+            category = categoryRepository.save(category);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.CATEGORY_ALREADY_EXISTS);
+        }
         return categoryMapper.toCategoryResponse(category);
     }
 

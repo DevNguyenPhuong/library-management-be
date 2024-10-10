@@ -1,5 +1,6 @@
 package com.example.library.dto.author;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthorRequest {
+    @NotNull(message = "FIELD_REQUIRED")
     String name;
+    @NotNull(message = "FIELD_REQUIRED")
     String biography;
 }

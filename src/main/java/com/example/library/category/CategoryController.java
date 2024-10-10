@@ -3,6 +3,7 @@ package com.example.library.category;
 import com.example.library.dto.Category.CategoryRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.Category.CategoryResponse;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ public class CategoryController {
     CategoryService categoryService;
 
     @PostMapping
-    ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest request) {
+    ApiResponse<CategoryResponse> create(@RequestBody @Valid CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.create(request))
                 .build();
@@ -34,7 +35,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{categoryID}")
-    ApiResponse<CategoryResponse> update(@PathVariable String categoryID, @RequestBody CategoryRequest request) {
+    ApiResponse<CategoryResponse> update(@PathVariable @Valid String categoryID, @RequestBody CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.update(categoryID, request))
                 .build();

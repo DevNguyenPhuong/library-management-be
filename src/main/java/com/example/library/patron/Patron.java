@@ -20,6 +20,7 @@ public class Patron {
     String id;
 
     String name;
+    @Column(unique = true)
     String phone;
     LocalDate dob;
 

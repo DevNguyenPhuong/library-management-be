@@ -28,9 +28,8 @@ public class PatronService {
             patron = patronRepository.save(patron);
         }
         catch (DataIntegrityViolationException e) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
-
 
         return patronMapper.toPatronResponse(patron);
     }
@@ -41,12 +40,12 @@ public class PatronService {
     }
 
     public PatronResponse getDetails(String id){
-        var patron = patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var patron = patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return patronMapper.toPatronResponse(patron);
     }
 
     public PatronResponse updatePatron(String id, PatronRequest request) {
-        Patron patron = patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Patron patron = patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         patronMapper.updatePatron(patron, request);
         return patronMapper.toPatronResponse(patronRepository.save(patron));
     }
