@@ -1,5 +1,7 @@
 package com.example.library.patron;
 
+import com.example.library.book.Book;
+import com.example.library.dto.book.BookResponse;
 import com.example.library.dto.patron.PatronRequest;
 import com.example.library.dto.patron.PatronResponse;
 import com.example.library.exception.AppException;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +41,16 @@ public class PatronService {
     public List<PatronResponse> getAll() {
         var patrons  = patronRepository.findAll();
         return patrons.stream().map(patronMapper::toPatronResponse).toList();
+    }
+
+    public Page<PatronResponse> getPatrons(String query, Pageable pageable) {
+        Page<Patron> patrons;
+        if (query == null || query.isEmpty()) {
+            patrons = patronRepository.findAll(pageable);
+        } else {
+            patrons = patronRepository.findByNameContainingIgnoreCaseOrIdContainingIgnoreCase(query, query, pageable);
+        }
+        return patrons.map(patronMapper::toPatronResponse); // Convert to BookResponse
     }
 
     public PatronResponse getDetails(String id){

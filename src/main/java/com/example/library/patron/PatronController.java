@@ -1,5 +1,6 @@
 package com.example.library.patron;
 
+import com.example.library.dto.book.BookResponse;
 import com.example.library.dto.patron.PatronRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.loan.LoanResponse;
@@ -10,6 +11,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +28,16 @@ public class PatronController {
     LoanService loanService;
 
     @GetMapping
-    ApiResponse<List<PatronResponse>> getAllPatrons() {
-        return ApiResponse.<List<PatronResponse>>builder()
-                .result(patronService.getAll())
+    public ApiResponse<Page<PatronResponse>> getAllPatron(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String query) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PatronResponse> patrons = patronService.getPatrons(query, pageable);
+
+        return ApiResponse.<Page<PatronResponse>>builder()
+                .result(patrons)
                 .build();
     }
 
