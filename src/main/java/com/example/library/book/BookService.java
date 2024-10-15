@@ -10,14 +10,19 @@ import com.example.library.exception.ErrorCode;
 import com.example.library.author.AuthorRepository;
 import com.example.library.category.CategoryRepository;
 import com.example.library.publisher.PublisherRepository;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -117,6 +122,17 @@ public class BookService {
         var books = bookRepository.findAll();
         return books.stream().map(bookMapper::toBookResponse).toList();
     }
+
+    public Page<BookResponse> getBooks(String query, Pageable pageable) {
+        Page<Book> books;
+        if (query == null || query.isEmpty()) {
+            books = bookRepository.findAll(pageable);
+        } else {
+            books = bookRepository.findByTitleContainingIgnoreCaseOrAuthors_NameContainingIgnoreCase(query, query, pageable);
+        }
+        return books.map(bookMapper::toBookResponse); // Convert to BookResponse
+    }
+
 
     public BookResponse getDetails(String bookID) {
         Book book = bookRepository.findById(bookID)

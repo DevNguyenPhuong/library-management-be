@@ -31,9 +31,9 @@ public enum ErrorCode {
     RESOURCE_ALREADY_EXISTS(409000, "Resource already exists", HttpStatus.CONFLICT),
     USER_ALREADY_EXISTS(409001, "User already exists", HttpStatus.CONFLICT),
     BOOK_ALREADY_EXISTS(409002, "Book already exists", HttpStatus.CONFLICT),
-    CATEGORY_ALREADY_EXISTS(409002, "Book already exists", HttpStatus.CONFLICT),
-    PUBLISHER_ALREADY_EXISTS(409002, "Book already exists", HttpStatus.CONFLICT),
-    PHONE_ALREADY_EXISTS(409002, "Book already exists", HttpStatus.CONFLICT),
+    CATEGORY_ALREADY_EXISTS(409003, "Category already exists", HttpStatus.CONFLICT),
+    PUBLISHER_ALREADY_EXISTS(409004, "Publisher already exists", HttpStatus.CONFLICT),
+    PHONE_ALREADY_EXISTS(409005, "Phone already exists", HttpStatus.CONFLICT),
 
     // 404xxx - Not found errors
     USER_NOT_FOUND(404001, "User not found", HttpStatus.NOT_FOUND),

@@ -5,17 +5,23 @@ import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.bookCopy.BookCopyService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/books")
+@Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -24,9 +30,16 @@ public class BookController {
     BookCopyService bookCopyService;
 
     @GetMapping
-    ApiResponse<List<BookResponse>> getAll() {
-        return ApiResponse.<List<BookResponse>>builder()
-                .result(bookService.getAll())
+    public ApiResponse<Page<BookResponse>> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String query) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BookResponse> books = bookService.getBooks(query, pageable);
+
+        return ApiResponse.<Page<BookResponse>>builder()
+                .result(books)
                 .build();
     }
 
