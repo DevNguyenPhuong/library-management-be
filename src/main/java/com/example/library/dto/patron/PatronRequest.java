@@ -3,9 +3,7 @@ package com.example.library.dto.patron;
 import com.example.library.constant.Gender;
 import com.example.library.constant.PatronStatus;
 import com.example.library.validator.DobConstraint;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,12 +22,13 @@ public class PatronRequest {
     String name;
     @NotBlank(message = "FIELD_REQUIRED")
     String phone;
-    @NotBlank(message = "FIELD_REQUIRED")
+
     Gender gender;
-    @NotBlank(message = "FIELD_REQUIRED")
+
     PatronStatus status;
 
-    @Size(min = 1, max = 5, message = "INVALID_BORROWED_BOOK")
+    @Min(value = 0, message = "INVALID_BORROWED_BOOK")
+    @Max(value = 5, message = "INVALID_BORROWED_BOOK")
     Integer currentlyBorrowed;
 
     @NotNull(message = "FIELD_REQUIRED")

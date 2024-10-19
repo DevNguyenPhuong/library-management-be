@@ -22,7 +22,7 @@ public enum ErrorCode {
     INVALID_PATRON_ID(400104, "Patron ID must be exactly 12 characters", HttpStatus.BAD_REQUEST),
     INVALID_PUBLICATION_YEAR(400105, "Publication year only fromm 1000 to now", HttpStatus.BAD_REQUEST),
     INVALID_COPIES(400106, "At least one copies should be created", HttpStatus.BAD_REQUEST),
-    INVALID_BORROWED_BOOK(400107, "Borrowed book should between 1 and 5", HttpStatus.BAD_REQUEST),
+    INVALID_BORROWED_BOOK(400107, "Borrowed book should between 0 and 5", HttpStatus.BAD_REQUEST),
     FIELD_REQUIRED(400200, "{field} cannot be empty", HttpStatus.BAD_REQUEST),
     POSITIVE_REQUIRED(400201, "{field} must be positive", HttpStatus.BAD_REQUEST),
 
@@ -44,6 +44,7 @@ public enum ErrorCode {
     PATRON_NOT_FOUND(404006, "Patron not found", HttpStatus.NOT_FOUND),
     BOOK_COPY_NOT_FOUND(404007, "Book copy not found", HttpStatus.NOT_FOUND),
     LOAN_NOT_FOUND(404008, "Loan not found", HttpStatus.NOT_FOUND),
+    FINE_NOT_FOUND(404009, "Fine not found", HttpStatus.NOT_FOUND),
 
     // 5xx Server Errors
     INTERNAL_SERVER_ERROR(500000, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),

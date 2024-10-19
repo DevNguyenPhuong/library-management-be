@@ -21,11 +21,12 @@ public class FineRequest {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String reason;
-    @NotBlank(message = "FIELD_REQUIRED")
+
     PaymentStatus paymentStatus;
 
     @NotNull(message = "FIELD_REQUIRED")
     LocalDate issueDate;
+
     @NotNull(message = "FIELD_REQUIRED")
     LocalDate paymentDate;
 

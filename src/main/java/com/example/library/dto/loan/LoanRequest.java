@@ -22,8 +22,9 @@ public class LoanRequest {
     @NotNull(message = "FIELD_REQUIRED")
     LocalDate dueDate;
 
-    @NotBlank(message = "FIELD_REQUIRED")
+
     LoanStatus status;
+
     @NotBlank(message = "FIELD_REQUIRED")
     String patronId;
     @NotBlank(message = "FIELD_REQUIRED")

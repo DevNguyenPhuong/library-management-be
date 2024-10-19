@@ -7,11 +7,14 @@ import com.example.library.book.Book;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
 import com.example.library.book.BookRepository;
+import com.example.library.fine.Fine;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,9 +30,9 @@ public class BookCopyService {
     BookRepository bookRepository;
     BookCopyMapper bookCopyMapper;
 
-    public List<BookCopyResponse> getAllByBookId(String bookId) {
-        var bookCopies = bookCopyRepository.findByBookId(bookId);
-        return bookCopies.stream().map(bookCopyMapper::toBookCopyResponse).toList();
+    public Page<BookCopyResponse> getBookCopiesByBookId(String bookId, Pageable pageable) {
+        Page<BookCopy> bookCopies = bookCopyRepository.findByBookId(bookId, pageable);
+        return bookCopies.map(bookCopyMapper::toBookCopyResponse);
     }
 
     public void delete(String bookCopyId) {

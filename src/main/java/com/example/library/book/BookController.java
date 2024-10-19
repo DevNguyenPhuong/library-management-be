@@ -33,8 +33,8 @@ public class BookController {
     public ApiResponse<Page<BookResponse>> getAllBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String query) {
-
+            @RequestParam(required = false) String query)
+    {
         Pageable pageable = PageRequest.of(page, size);
         Page<BookResponse> books = bookService.getBooks(query, pageable);
 
@@ -71,9 +71,15 @@ public class BookController {
     }
 
     @GetMapping("/{bookId}/copies")
-    ApiResponse<List<BookCopyResponse>> getCopies(@PathVariable String bookId) {
-        return ApiResponse.<List<BookCopyResponse>>builder()
-                .result(bookCopyService.getAllByBookId(bookId))
+    ApiResponse<Page<BookCopyResponse>> getCopies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable String bookId)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BookCopyResponse> bookCopies = bookCopyService.getBookCopiesByBookId(bookId, pageable);
+        return ApiResponse.<Page<BookCopyResponse>>builder()
+                .result(bookCopies)
                 .build();
     }
 
