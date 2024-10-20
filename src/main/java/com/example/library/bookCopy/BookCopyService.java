@@ -35,6 +35,11 @@ public class BookCopyService {
         return bookCopies.map(bookCopyMapper::toBookCopyResponse);
     }
 
+    public List<BookCopyResponse> getBooksCopy() {
+        var bookCopies = bookCopyRepository.findAll();
+        return bookCopies.stream().map(bookCopyMapper::toBookCopyResponse).toList();
+    }
+
     public void delete(String bookCopyId) {
         bookCopyRepository.deleteById(bookCopyId);
     }

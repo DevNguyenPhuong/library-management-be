@@ -35,4 +35,11 @@ public class BookCopyController {
         bookCopyService.delete(bookCopyId);
         return ApiResponse.<Void>builder().build();
     }
+
+    @GetMapping
+    ApiResponse<List<BookCopyResponse>> getAllCopies() {
+        return   ApiResponse.<List<BookCopyResponse>>builder()
+                .result(bookCopyService.getBooksCopy())
+                .build();
+    }
 }
