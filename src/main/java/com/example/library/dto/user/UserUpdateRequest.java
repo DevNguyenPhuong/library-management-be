@@ -1,5 +1,6 @@
 package com.example.library.dto.user;
 
+import com.example.library.constant.Gender;
 import com.example.library.validator.DobConstraint;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -14,14 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
+//    String password;
 
     @NotBlank(message = "FIELD_REQUIRED")
-    String password;
+    String name;
+
     @NotBlank(message = "FIELD_REQUIRED")
-    String firstName;
-    @NotBlank(message = "FIELD_REQUIRED")
-    String lastName;
-    @DobConstraint(min = 18, message = "INVALID_DOB")
+    String phone;
+
+    Gender gender;
+
+    @DobConstraint(min = 5, message = "INVALID_DOB")
     LocalDate dob;
 
     List<String> roles;

@@ -19,7 +19,7 @@ public class LoanController {
     LoanService loanService;
 
     @PostMapping
-    public ApiResponse<LoanResponse> loan(@RequestBody @Valid LoanRequest request) {
+    public ApiResponse<LoanResponse> creatLoan(@RequestBody @Valid LoanRequest request) {
         return ApiResponse.<LoanResponse>builder()
                 .result(loanService.create(request))
                 .build();

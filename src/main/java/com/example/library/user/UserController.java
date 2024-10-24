@@ -31,7 +31,7 @@ public class UserController {
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers() {
         return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
+                .result(userService.getAllUsersExceptCurrent())
                 .build();
     }
 

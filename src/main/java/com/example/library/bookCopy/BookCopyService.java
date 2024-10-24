@@ -1,6 +1,8 @@
 package com.example.library.bookCopy;
 
+import com.example.library.category.Category;
 import com.example.library.constant.BookCopyStatus;
+import com.example.library.dto.bookCopy.BookCopyRequest;
 import com.example.library.dto.bookCopy.CreationBookCopiesRequest;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.book.Book;
@@ -61,5 +63,14 @@ public class BookCopyService {
         return savedCopies.stream()
                 .map(bookCopyMapper::toBookCopyResponse)
                 .toList();
+    }
+
+    public BookCopyResponse updateBookCopy(String bookCopyId, BookCopyRequest request) {
+        BookCopy bookCopy = bookCopyRepository.findById(bookCopyId)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        bookCopyMapper.updateBookCopy(bookCopy, request);
+        bookCopy = bookCopyRepository.save(bookCopy);
+        return bookCopyMapper.toBookCopyResponse(bookCopy);
     }
 }

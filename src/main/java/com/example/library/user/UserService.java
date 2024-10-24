@@ -15,12 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +35,25 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
+        // Map the request to user entity
         User user = userMapper.toUser(request);
+
+        // Encode password before saving
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<Role> roles = new HashSet<>();
-        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
+        // Initialize roles set
+        Set<Role> roles = new HashSet<>();
 
+        // Add default user role
+        roleRepository.findById(PredefinedRole.USER_ROLE)
+                .ifPresent(roles::add);
+
+        // Add additional roles if specified in the request
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            roles.addAll(roleRepository.findAllById(request.getRoles()));
+        }
+
+        // Set the combined roles
         user.setRoles(roles);
 
         try {
@@ -50,6 +65,7 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -59,12 +75,12 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
+//    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
@@ -78,9 +94,16 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getUsers() {
-        log.info("In method get Users");
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public List<UserResponse> getAllUsersExceptCurrent() {
+        log.info("In method getAllUsersExceptCurrent");
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        return userRepository.findAll().stream()
+                .filter(user -> !user.getUsername().equals(currentUsername))
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")

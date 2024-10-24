@@ -1,6 +1,7 @@
 package com.example.library.bookCopy;
 
 
+import com.example.library.dto.bookCopy.BookCopyRequest;
 import com.example.library.dto.bookCopy.CreationBookCopiesRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
@@ -28,7 +29,12 @@ public class BookCopyController {
                 .build();
     }
 
-
+    @PutMapping("/{bookCopyId}")
+    ApiResponse <BookCopyResponse> updateCopies(@PathVariable("bookCopyId") String bookCopyId, @RequestBody @Valid BookCopyRequest request) {
+        return ApiResponse.<BookCopyResponse>builder()
+                .result(bookCopyService.updateBookCopy(bookCopyId, request))
+                .build();
+    }
 
     @DeleteMapping("/{bookCopyId}")
     ApiResponse<Void> deleteByBookCopyId(@PathVariable String bookCopyId) {
