@@ -2,6 +2,7 @@ package com.example.library.bookCopy;
 
 import com.example.library.category.Category;
 import com.example.library.constant.BookCopyStatus;
+import com.example.library.dto.Category.CategoryResponse;
 import com.example.library.dto.bookCopy.BookCopyRequest;
 import com.example.library.dto.bookCopy.CreationBookCopiesRequest;
 import com.example.library.dto.bookCopy.BookCopyResponse;
@@ -72,5 +73,11 @@ public class BookCopyService {
         bookCopyMapper.updateBookCopy(bookCopy, request);
         bookCopy = bookCopyRepository.save(bookCopy);
         return bookCopyMapper.toBookCopyResponse(bookCopy);
+    }
+
+    public BookCopyResponse getDetails(String bookCopiesId) {
+            BookCopy bookCopy = bookCopyRepository.findById(bookCopiesId)
+                    .orElseThrow(() ->  new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
+            return bookCopyMapper.toBookCopyResponse(bookCopy);
     }
 }
