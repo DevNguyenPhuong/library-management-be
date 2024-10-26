@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +49,10 @@ public class LoanService {
 
     public void delete(String loanId) {
         loanRepository.deleteById(loanId);
+    }
+
+    public Page<LoanResponse> getLoans(Pageable pageable) {
+        Page<Loan> loans = loanRepository.findAll(pageable);
+        return loans.map(loanMapper::toLoanResponse);
     }
 }
