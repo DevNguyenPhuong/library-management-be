@@ -20,6 +20,11 @@ import java.util.Set;
 @Entity
 @Table(name = "_user")
 public class User extends Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    protected String id;
+
+
     @Column(unique = true)
     private String username;
 

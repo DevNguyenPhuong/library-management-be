@@ -18,6 +18,9 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Patron extends Person {
+    @Id
+    protected String id;
+
     @Enumerated(EnumType.STRING)
     PatronStatus status;
 
