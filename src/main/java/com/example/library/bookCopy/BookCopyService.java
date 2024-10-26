@@ -68,7 +68,7 @@ public class BookCopyService {
 
     public BookCopyResponse updateBookCopy(String bookCopyId, BookCopyRequest request) {
         BookCopy bookCopy = bookCopyRepository.findById(bookCopyId)
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
 
         bookCopyMapper.updateBookCopy(bookCopy, request);
         bookCopy = bookCopyRepository.save(bookCopy);
