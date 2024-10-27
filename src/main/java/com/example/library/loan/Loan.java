@@ -1,7 +1,10 @@
 package com.example.library.loan;
 
+import com.example.library.bookCopy.BookCopy;
 import com.example.library.constant.LoanStatus;
 import com.example.library.fine.Fine;
+import com.example.library.patron.Patron;
+import com.example.library.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,9 +30,14 @@ public class Loan {
     @Enumerated(EnumType.STRING)
     LoanStatus status;
 
-    String bookCopyId;
-    String  userId;
-    String patronId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    BookCopy bookCopy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    Patron patron;
 
     @OneToOne(mappedBy = "loan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Fine fine;

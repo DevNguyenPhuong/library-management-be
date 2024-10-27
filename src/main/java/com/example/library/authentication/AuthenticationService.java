@@ -6,6 +6,7 @@ import com.example.library.dto.authentication.LogoutRequest;
 import com.example.library.dto.authentication.RefreshRequest;
 import com.example.library.dto.authentication.AuthenticationResponse;
 import com.example.library.dto.authentication.IntrospectResponse;
+import com.example.library.role.Role;
 import com.example.library.user.User;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
@@ -23,15 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,7 +80,18 @@ public class AuthenticationService {
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .id(user.getId())
+                .username(user.getUsername())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .dob(user.getDob())
+                .gender(user.getGender())
+                .roles(user.getRoles())
+                .expiresIn(VALID_DURATION)
+                .build();
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {

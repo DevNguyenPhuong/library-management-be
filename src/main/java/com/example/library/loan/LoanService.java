@@ -1,11 +1,14 @@
 package com.example.library.loan;
 
+import com.example.library.bookCopy.BookCopy;
 import com.example.library.dto.loan.LoanRequest;
 import com.example.library.dto.loan.LoanResponse;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
 import com.example.library.bookCopy.BookCopyRepository;
+import com.example.library.patron.Patron;
 import com.example.library.patron.PatronRepository;
+import com.example.library.user.User;
 import com.example.library.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -31,7 +34,16 @@ public class LoanService {
 
     @Transactional
     public LoanResponse create(LoanRequest request) {
+        BookCopy bookCopy = bookCopyRepository.findById(request.getBookCopyId()).orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Patron patron = patronRepository.findById(request.getPatronId()).orElseThrow(() -> new AppException(ErrorCode.PATRON_NOT_FOUND));
+
         Loan loan = loanMapper.toLoan(request);
+
+        loan.setBookCopy(bookCopy);
+        loan.setUser(user);
+        loan.setPatron(patron);
+
         return loanMapper.toLoanResponse(loanRepository.save(loan));
     }
 
@@ -43,8 +55,10 @@ public class LoanService {
     }
 
     public List<LoanResponse> getLoansByPatron(String patronId) {
-        var loans = loanRepository.findAllByPatronId(patronId);
-        return loans.stream().map(loanMapper::toLoanResponse).toList();
+        return loanRepository.findAllByPatronIdWithDetails(patronId)
+                .stream()
+                .map(loanMapper::toLoanResponse)
+                .toList();
     }
 
     public void delete(String loanId) {

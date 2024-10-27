@@ -15,11 +15,11 @@ import java.time.LocalDate;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @Builder
 public class LoanRequest {
-    @NotNull(message = "FIELD_REQUIRED")
+
     LocalDate loanDate;
-    @NotNull(message = "FIELD_REQUIRED")
+
     LocalDate returnDate;
-    @NotNull(message = "FIELD_REQUIRED")
+
     LocalDate dueDate;
 
 

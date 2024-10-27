@@ -1,6 +1,10 @@
 package com.example.library.dto.loan;
 
+import com.example.library.bookCopy.BookCopy;
 import com.example.library.constant.LoanStatus;
+import com.example.library.dto.bookCopy.BookCopyResponse;
+import com.example.library.dto.patron.PatronSimpleResponse;
+import com.example.library.dto.user.UserSimpleResponse;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
@@ -18,7 +22,7 @@ public class LoanResponse {
     LocalDate dueDate;
     LoanStatus status;
 
-    String patronId;
-    String bookCopyId;
-    String userId;
+    PatronSimpleResponse patron;
+    BookCopyResponse bookCopy;
+    UserSimpleResponse user;
 }

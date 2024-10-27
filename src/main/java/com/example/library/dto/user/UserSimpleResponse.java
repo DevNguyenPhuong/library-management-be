@@ -1,16 +1,16 @@
-package com.example.library.dto.bookCopy;
+package com.example.library.dto.user;
 
-import com.example.library.constant.BookCopyStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookCopyResponse {
+public class UserSimpleResponse {
     String id;
-    BookCopyStatus status;
-    String title;
+    String username;
 }
