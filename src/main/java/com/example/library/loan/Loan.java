@@ -27,6 +27,8 @@ public class Loan {
     LocalDate dueDate;
     LocalDate returnDate;
 
+    String bookId;
+
     @Enumerated(EnumType.STRING)
     LoanStatus status;
 

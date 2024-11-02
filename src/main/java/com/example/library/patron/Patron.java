@@ -24,6 +24,6 @@ public class Patron extends Person {
     @Enumerated(EnumType.STRING)
     PatronStatus status;
 
-    Integer currentlyBorrowed;
     LocalDate membershipDate;
+    LocalDate membershipEndDate;
 }

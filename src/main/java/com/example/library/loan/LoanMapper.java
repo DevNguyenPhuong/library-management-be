@@ -25,6 +25,7 @@ public interface LoanMapper {
     @Mapping(target = "user", qualifiedByName = "toUserSimpleResponse")
     LoanResponse toLoanResponse(Loan loan);
 
+    @Mapping(target = "bookId", ignore = true)
     @Mapping(target="bookCopy", ignore = true)
     @Mapping(target="user", ignore = true)
     @Mapping(target="patron", ignore = true)

@@ -1,12 +1,16 @@
 package com.example.library.fine;
 
+import com.example.library.constant.PaymentStatus;
 import com.example.library.dto.fine.FineRequest;
 import com.example.library.dto.fine.FineResponse;
 import com.example.library.dto.patron.PatronRequest;
 import com.example.library.dto.patron.PatronResponse;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
+import com.example.library.loan.Loan;
+import com.example.library.loan.LoanRepository;
 import com.example.library.patron.Patron;
+import com.example.library.patron.PatronRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,10 +29,16 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class FineService {
     FineRepository fineRepository;
+    PatronRepository patronRepository;
+    LoanRepository loanRepository;
     FineMapper fineMapper;
 
     public FineResponse create(FineRequest fineRequest) {
+        Patron patron = patronRepository.findById(fineRequest.getPatronId()).orElseThrow(() -> new AppException(ErrorCode.PATRON_NOT_FOUND));
+        Loan loan = loanRepository.findById(fineRequest.getLoanId()).orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
         Fine fine = fineMapper.toFine(fineRequest);
+        fine.setPatron(patron);
+        fine.setLoan(loan);
         return fineMapper.toFineResponse(fineRepository.save(fine));
     }
 
@@ -37,6 +47,7 @@ public class FineService {
         fineMapper.updateFine(fine, request);
         return fineMapper.toFineResponse(fineRepository.save(fine));
     }
+
 
     public Page<FineResponse> getFines( Pageable pageable) {
         Page<Fine> fines;

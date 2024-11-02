@@ -2,6 +2,7 @@ package com.example.library.fine;
 
 import com.example.library.constant.PaymentStatus;
 import com.example.library.loan.Loan;
+import com.example.library.patron.Patron;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,10 +24,15 @@ public class Fine {
     Integer amount;
     String reason;
     LocalDate issueDate;
+
     @Enumerated(EnumType.STRING)
     PaymentStatus paymentStatus;
+
     LocalDate paymentDate;
 
+    @ManyToOne
+    Patron patron;
+
     @OneToOne
-    private Loan loan;
+    Loan loan;
 }

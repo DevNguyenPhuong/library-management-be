@@ -1,5 +1,7 @@
 package com.example.library.category;
 
+import com.example.library.book.BookRepository;
+import com.example.library.dto.Category.CategoryBookResponse;
 import com.example.library.dto.Category.CategoryRequest;
 import com.example.library.dto.Category.CategoryResponse;
 import com.example.library.exception.AppException;
@@ -12,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ import java.util.List;
 public class CategoryService {
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
+    BookRepository bookRepository;
 
     public CategoryResponse create(CategoryRequest request) {
         Category category = categoryMapper.toCategory(request);
@@ -41,6 +45,16 @@ public class CategoryService {
         Category category = categoryRepository.findById(categoryID)
                 .orElseThrow(() ->  new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         return categoryMapper.toCategoryResponse(category);
+    }
+
+    public List<CategoryBookResponse> getCategoryStatistics() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(category -> {
+                    long bookCount = bookRepository.countByCategories(category);
+                    return new CategoryBookResponse(category.getName(), bookCount);
+                })
+                .collect(Collectors.toList());
     }
 
     public CategoryResponse update(String categoryID, CategoryRequest request) {

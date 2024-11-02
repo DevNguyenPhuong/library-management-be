@@ -46,6 +46,17 @@ public enum ErrorCode {
     LOAN_NOT_FOUND(404008, "Loan not found", HttpStatus.NOT_FOUND),
     FINE_NOT_FOUND(404009, "Fine not found", HttpStatus.NOT_FOUND),
 
+    // 422xxx - Precondition/State errors
+    BOOK_COPY_NOT_AVAILABLE(422001, "Book copy is not available for borrowing", HttpStatus.UNPROCESSABLE_ENTITY),
+    BOOK_COPY_ALREADY_BORROWED(422002, "Book copy is already borrowed", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_HAS_OVERDUE_BOOKS(422003, "Patron has overdue books", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_REACHED_LOAN_LIMIT(422004, "Patron has reached maximum loan limit", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_HAS_ALREADY_BORROWED_THIS_BOOK(422005, "Patron has already borrowed this book", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_NOT_ACTIVE(422006, "Patron account is not active", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_MEMBERSHIP_EXPIRED(422007, "Patron membership has expired", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_ALREADY_HAS_BOOK(422008, "Patron already has a copy of this book", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_HAS_OUTSTANDING_FINES(422009, "Patron has unpaid fines", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_HAS_OVERDUE_LOANS(422010, "Patron has overdue loans", HttpStatus.UNPROCESSABLE_ENTITY),
     // 5xx Server Errors
     INTERNAL_SERVER_ERROR(500000, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     // 50xxxx - Specific server errors can be added here

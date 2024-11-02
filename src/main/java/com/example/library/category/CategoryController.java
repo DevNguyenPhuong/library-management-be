@@ -1,5 +1,6 @@
 package com.example.library.category;
 
+import com.example.library.dto.Category.CategoryBookResponse;
 import com.example.library.dto.Category.CategoryRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.Category.CategoryResponse;
@@ -53,5 +54,12 @@ public class CategoryController {
     ApiResponse<Void> delete(@PathVariable String categoryID) {
         categoryService.delete(categoryID);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @GetMapping("/statistics")
+    ApiResponse<List<CategoryBookResponse>>getCategoryStatistics() {
+        return ApiResponse.<List<CategoryBookResponse>>builder()
+                .result(categoryService.getCategoryStatistics())
+                .build();
     }
 }

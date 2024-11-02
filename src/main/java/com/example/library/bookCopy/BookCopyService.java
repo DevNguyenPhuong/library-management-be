@@ -33,8 +33,13 @@ public class BookCopyService {
     BookRepository bookRepository;
     BookCopyMapper bookCopyMapper;
 
-    public Page<BookCopyResponse> getBookCopiesByBookId(String bookId, Pageable pageable) {
-        Page<BookCopy> bookCopies = bookCopyRepository.findByBookId(bookId, pageable);
+    public Page<BookCopyResponse> getBookCopiesByBookId(String bookId, Pageable pageable, String query) {
+        Page<BookCopy> bookCopies;
+        if(query == null || query.isEmpty()) {
+            bookCopies = bookCopyRepository.findByBookId(bookId, pageable);
+        }else {
+            bookCopies = bookCopyRepository.findByBookIdAndIdContainingIgnoreCase(bookId, query, pageable);
+        }
         return bookCopies.map(bookCopyMapper::toBookCopyResponse);
     }
 

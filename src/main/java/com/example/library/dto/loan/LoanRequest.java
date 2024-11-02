@@ -22,7 +22,6 @@ public class LoanRequest {
 
     LocalDate dueDate;
 
-
     LoanStatus status;
 
     @NotBlank(message = "FIELD_REQUIRED")

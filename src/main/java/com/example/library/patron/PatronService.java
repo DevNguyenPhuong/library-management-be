@@ -1,11 +1,13 @@
 package com.example.library.patron;
 
 import com.example.library.book.Book;
+import com.example.library.constant.LoanStatus;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.dto.patron.PatronRequest;
 import com.example.library.dto.patron.PatronResponse;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
+import com.example.library.loan.LoanRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +26,7 @@ import java.util.List;
 public class PatronService {
     PatronRepository patronRepository;
     PatronMapper patronMapper;
+    LoanRepository loanRepository;
 
     public PatronResponse create(PatronRequest request) {
         Patron patron = patronMapper.toPatron(request);
@@ -50,7 +53,23 @@ public class PatronService {
         } else {
             patrons = patronRepository.findByNameContainingIgnoreCaseOrIdContainingIgnoreCase(query, query, pageable);
         }
-        return patrons.map(patronMapper::toPatronResponse); // Convert to BookResponse
+        return patrons.map(this::toPatronResponse);
+    }
+
+    private PatronResponse toPatronResponse(Patron patron) {
+        PatronResponse response = new PatronResponse();
+        response.setId(patron.getId());
+        response.setName(patron.getName());
+        response.setPhone(patron.getPhone());
+        response.setGender(patron.getGender());
+        response.setStatus(patron.getStatus());
+        response.setDob(patron.getDob());
+        response.setMembershipDate(patron.getMembershipDate());
+
+        Integer currentlyBorrowed = loanRepository.countByPatronAndStatus(patron, LoanStatus.BORROWED);
+        response.setCurrentlyBorrowed(currentlyBorrowed);
+
+        return response;
     }
 
     public PatronResponse getDetails(String id){

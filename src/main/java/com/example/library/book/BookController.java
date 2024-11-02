@@ -74,10 +74,11 @@ public class BookController {
     ApiResponse<Page<BookCopyResponse>> getCopies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String query,
             @PathVariable String bookId)
     {
         Pageable pageable = PageRequest.of(page, size);
-        Page<BookCopyResponse> bookCopies = bookCopyService.getBookCopiesByBookId(bookId, pageable);
+        Page<BookCopyResponse> bookCopies = bookCopyService.getBookCopiesByBookId(bookId, pageable, query);
         return ApiResponse.<Page<BookCopyResponse>>builder()
                 .result(bookCopies)
                 .build();

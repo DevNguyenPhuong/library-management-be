@@ -1,5 +1,6 @@
 package com.example.library.loan;
 
+import com.example.library.dto.loan.LoanMonthlyStat;
 import com.example.library.dto.loan.LoanRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.loan.LoanResponse;
@@ -54,5 +55,12 @@ public class LoanController {
     public ApiResponse<Void> loan(@PathVariable String loanId) {
         loanService.delete(loanId);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @GetMapping("/statistics")
+    public ApiResponse<LoanMonthlyStat> getMonthlyLoanStats(@RequestParam String year, @RequestParam String month) {
+        return ApiResponse.<LoanMonthlyStat>builder()
+                .result(loanService.getLoanStatsByMonth(Integer.parseInt(year) , Integer.parseInt(month)))
+                .build();
     }
 }

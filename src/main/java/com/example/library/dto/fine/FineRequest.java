@@ -22,6 +22,9 @@ public class FineRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String reason;
 
+    @NotBlank(message = "FIELD_REQUIRED")
+    String patronId;
+
     PaymentStatus paymentStatus;
 
     @NotNull(message = "FIELD_REQUIRED")
