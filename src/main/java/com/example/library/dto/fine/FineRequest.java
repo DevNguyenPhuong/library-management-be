@@ -18,21 +18,13 @@ public class FineRequest {
     @NotNull(message = "FIELD_REQUIRED")
     @Positive(message = "POSITIVE_REQUIRED")
     Integer amount;
-
-    @NotBlank(message = "FIELD_REQUIRED")
     String reason;
-
     @NotBlank(message = "FIELD_REQUIRED")
     String patronId;
-
     PaymentStatus paymentStatus;
-
     @NotNull(message = "FIELD_REQUIRED")
     LocalDate issueDate;
-
-    @NotNull(message = "FIELD_REQUIRED")
     LocalDate paymentDate;
-
     @NotBlank(message = "FIELD_REQUIRED")
     String loanId;
 }

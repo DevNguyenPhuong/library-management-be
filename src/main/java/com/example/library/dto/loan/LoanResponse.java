@@ -5,6 +5,7 @@ import com.example.library.constant.LoanStatus;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.dto.patron.PatronSimpleResponse;
 import com.example.library.dto.user.UserSimpleResponse;
+import com.example.library.fine.Fine;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
@@ -25,4 +26,5 @@ public class LoanResponse {
     PatronSimpleResponse patron;
     BookCopyResponse bookCopy;
     UserSimpleResponse user;
+
 }

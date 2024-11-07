@@ -12,4 +12,6 @@ import java.util.List;
 @Repository
 public interface FineRepository extends JpaRepository<Fine, String> {
     Integer countByPatronAndPaymentStatus(Patron patron, PaymentStatus Status);
+
+    List<Fine> findByPatron(Patron patron);
 }

@@ -14,9 +14,11 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FineResponse {
+    String id;
     Integer amount;
     String reason;
     LocalDate issueDate;
     PaymentStatus paymentStatus;
     LocalDate paymentDate;
+    LoanResponse loan;
 }

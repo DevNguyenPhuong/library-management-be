@@ -31,6 +31,7 @@ public interface LoanRepository extends JpaRepository<Loan, String>, JpaSpecific
             "LEFT JOIN FETCH bc.book " +
             "LEFT JOIN FETCH l.user " +
             "LEFT JOIN FETCH l.patron " +
+            "LEFT JOIN FETCH l.fine " +
             "WHERE l.patron.id = :patronId")
     List<Loan> findAllByPatronIdWithDetails(@Param("patronId") String patronId);
 

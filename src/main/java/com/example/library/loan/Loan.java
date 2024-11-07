@@ -42,5 +42,5 @@ public class Loan {
     Patron patron;
 
     @OneToOne(mappedBy = "loan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Fine fine;
+    Fine fine;
 }

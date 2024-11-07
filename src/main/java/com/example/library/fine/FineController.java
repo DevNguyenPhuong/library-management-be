@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/fines")
 @RequiredArgsConstructor
@@ -33,6 +35,17 @@ public class FineController {
                 .build();
     }
 
+    @GetMapping("/{patronId}")
+    public ApiResponse<List<FineResponse>> getFinesByPatron(
+            @PathVariable String patronId
+    ) {
+        List<FineResponse> fines = fineService.getFinesByPatron(patronId);
+        return ApiResponse.<List<FineResponse>>builder()
+                .result(fines)
+                .build();
+    }
+
+
 
     @PostMapping
     ApiResponse<FineResponse> createFine(@RequestBody @Valid FineRequest request) {
@@ -42,7 +55,7 @@ public class FineController {
     }
 
     @PutMapping("/{fineId}")
-    ApiResponse<FineResponse> updatePatron(@PathVariable @Valid String fineId, @RequestBody FineRequest request) {
+    ApiResponse<FineResponse> updateFine(@PathVariable String fineId, @RequestBody @Valid FineRequest request) {
         return ApiResponse.<FineResponse>builder()
                 .result(fineService.updateFine(fineId, request))
                 .build();

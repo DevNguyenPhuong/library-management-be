@@ -57,6 +57,7 @@ public enum ErrorCode {
     PATRON_ALREADY_HAS_BOOK(422008, "Patron already has a copy of this book", HttpStatus.UNPROCESSABLE_ENTITY),
     PATRON_HAS_OUTSTANDING_FINES(422009, "Patron has unpaid fines", HttpStatus.UNPROCESSABLE_ENTITY),
     PATRON_HAS_OVERDUE_LOANS(422010, "Patron has overdue loans", HttpStatus.UNPROCESSABLE_ENTITY),
+    THIS_LOAN_HAVE_FINE(422011, "Loan already has fine", HttpStatus.UNPROCESSABLE_ENTITY),
     // 5xx Server Errors
     INTERNAL_SERVER_ERROR(500000, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     // 50xxxx - Specific server errors can be added here

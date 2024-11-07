@@ -12,7 +12,10 @@ public interface FineMapper {
     @Mapping(target = "loan", ignore = true)
     Fine toFine(FineRequest fineRequest);
 
+    @Mapping(target = "loan", source = "loan")
     FineResponse toFineResponse(Fine fine);
 
+    @Mapping(target = "patron", ignore = true)
+    @Mapping(target = "loan", ignore = true)
     void updateFine(@MappingTarget Fine fine, FineRequest fineRequest);
 }

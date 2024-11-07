@@ -74,7 +74,7 @@ public class PatronService {
 
     public PatronResponse getDetails(String id){
         var patron = patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return patronMapper.toPatronResponse(patron);
+        return this.toPatronResponse(patron);
     }
 
     public PatronResponse updatePatron(String id, PatronRequest request) {
