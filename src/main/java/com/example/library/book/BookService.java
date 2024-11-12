@@ -4,6 +4,7 @@ import com.example.library.dto.book.BookRequest;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.author.Author;
 import com.example.library.category.Category;
+import com.example.library.image.ImageService;
 import com.example.library.publisher.Publisher;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
@@ -38,9 +39,16 @@ public class BookService {
     PublisherRepository publisherRepository;
     AuthorRepository authorRepository;
     CategoryRepository categoryRepository;
+    ImageService imageService;
 
     public BookResponse create(BookRequest request) {
         Book book = bookMapper.toBook(request);
+
+        // Handle image upload if present
+//        if (request.getImage() != null && !request.getImage().isEmpty()) {
+//            String imagePath = imageService.storeBookImage(request.getImage());
+//            book.setImagePath(imagePath);
+//        }
 
         // Set publisher
         Publisher publisher = publisherRepository.findById(request.getPublisher())

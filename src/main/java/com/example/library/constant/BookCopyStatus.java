@@ -1,5 +1,5 @@
 package com.example.library.constant;
 
 public enum BookCopyStatus {
-    AVAILABLE, CHECKOUT, BORROWED, REPAIRING, LOST
+    AVAILABLE, BORROWED, REPAIRING, LOST
 }

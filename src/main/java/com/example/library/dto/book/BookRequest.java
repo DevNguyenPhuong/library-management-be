@@ -3,6 +3,7 @@ package com.example.library.dto.book;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -33,4 +34,6 @@ public class BookRequest {
 
     @NotNull(message = "FIELD_REQUIRED")
     private Set<@NotBlank(message = "FIELD_REQUIRED") String> categories;
+
+
 }

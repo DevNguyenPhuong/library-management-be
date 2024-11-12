@@ -37,4 +37,6 @@ public class Book {
 
     @ManyToMany
     Set<Author> authors;
+
+  //  String imagePath;
 }

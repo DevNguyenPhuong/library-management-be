@@ -46,10 +46,6 @@ public class ApplicationInitConfig {
                         .description("Librarian role")
                         .build());
 
-                roleRepository.save(Role.builder()
-                        .name(PredefinedRole.KEEPER_ROLE)
-                        .description("Keeper role")
-                        .build());
 
                 Role adminRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.ADMIN_ROLE)
