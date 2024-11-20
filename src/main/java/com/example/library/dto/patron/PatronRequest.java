@@ -32,9 +32,6 @@ public class PatronRequest {
 
     PatronStatus status;
 
-    @Min(value = 0, message = "INVALID_BORROWED_BOOK")
-    @Max(value = 5, message = "INVALID_BORROWED_BOOK")
-    Integer currentlyBorrowed;
 
     @NotNull(message = "FIELD_REQUIRED")
     LocalDate membershipDate;
