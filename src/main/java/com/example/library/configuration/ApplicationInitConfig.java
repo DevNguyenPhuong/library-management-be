@@ -14,12 +14,14 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableScheduling
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ApplicationInitConfig {
@@ -41,7 +43,8 @@ public class ApplicationInitConfig {
         log.info("Initializing application.....");
         return args -> {
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
-                roleRepository.save(Role.builder()
+
+                Role librarianRole = roleRepository.save(Role.builder()
                         .name(PredefinedRole.LIBRARIAN_ROLE)
                         .description("Librarian role")
                         .build());
@@ -54,6 +57,7 @@ public class ApplicationInitConfig {
 
                 var roles = new HashSet<Role>();
                 roles.add(adminRole);
+                roles.add(librarianRole);
 
                 User user = User.builder()
                         .username(ADMIN_USER_NAME)

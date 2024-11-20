@@ -51,7 +51,9 @@ public class AuthorController {
 
     @DeleteMapping("/{authorID}")
     ApiResponse<Void> delete(@PathVariable String authorID) {
-        authorService.delete(authorID);
+        authorService.deleteAuthor(authorID);
         return ApiResponse.<Void>builder().build();
     }
+
+
 }

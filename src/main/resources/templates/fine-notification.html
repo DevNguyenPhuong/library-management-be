@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f44336;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .amount {
+            font-weight: bold;
+            color: #f44336;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+    <title>Fine</title>
+</head>
+<body>
+<div class="header">
+    <h2>Library Fine Notice</h2>
+</div>
+
+<div class="content">
+    <p>Dear <span th:text="${name}">User</span>,</p>
+
+    <p>This email is to inform you that your library account's deposit has been deducted because a fine has not been paid for more than 30 days.</p>
+
+    <p>Details of the transaction:</p>
+    <ul>
+        <li>Fine Amount: <span th:text="${#numbers.formatInteger(fineAmount, 1, 'COMMA')}" class="amount">53,000</span> VNĐ</li>
+        <li>New Account deposit: <span th:text="${#numbers.formatInteger(newDeposit, 1, 'COMMA')}" class="amount">53,000</span> VNĐ</li>
+    </ul>
+
+    <p>Please note that additional deduction may accrue if the fine are not paid promptly. To avoid further deduction, please pay all fine as soon as possible.</p>
+
+    <p>If you believe this charge was made in error, please contact the library staff.</p>
+</div>
+
+<div class="footer">
+    <p>This is an automated message. Please do not reply.</p>
+    <p>Date: <span th:text="${currentDate}">January 1, 2024</span></p>
+</div>
+</body>
+</html>

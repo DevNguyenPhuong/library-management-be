@@ -5,6 +5,8 @@ import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.bookCopy.BookCopyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -15,8 +17,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.DataInput;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -30,7 +36,7 @@ public class BookController {
     BookCopyService bookCopyService;
 
     @GetMapping
-    public ApiResponse<Page<BookResponse>> getAllBooks(
+    public ApiResponse<Page<BookResponse>> getBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String query)
@@ -44,29 +50,44 @@ public class BookController {
     }
 
     @GetMapping("/{bookID}")
-    ApiResponse<BookResponse> getDetails(@PathVariable String bookID) {
+    ApiResponse<BookResponse> getBook(@PathVariable String bookID) {
         return ApiResponse.<BookResponse>builder()
-                .result(bookService.getDetails(bookID))
+                .result(bookService.getBook(bookID))
                 .build();
     }
 
-    @PostMapping
-    ApiResponse<BookResponse> create(@RequestBody @Valid BookRequest request) {
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ApiResponse<BookResponse> createBook(
+            @RequestPart("book") @Valid BookRequest bookRequest,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
         return ApiResponse.<BookResponse>builder()
-                .result(bookService.create(request))
+                .result(bookService.createBook(bookRequest, image))
                 .build();
     }
 
-    @PutMapping("/{bookID}")
-    ApiResponse<BookResponse> update(@RequestBody @Valid BookRequest request, @PathVariable String bookID) {
+    @PutMapping(
+            value = "/{bookId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ApiResponse<BookResponse> updateBook(
+            @RequestPart("book") @Valid BookRequest bookRequest,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @PathVariable String bookId
+
+    ) {
         return ApiResponse.<BookResponse>builder()
-                .result(bookService.update(request, bookID))
+                .result(bookService.updateBook(bookRequest, bookId, image))
                 .build();
     }
 
     @DeleteMapping("/{bookID}")
-    ApiResponse<Void> delete(@PathVariable String bookID) {
-        bookService.delete(bookID);
+    ApiResponse<Void> deleteBook(@PathVariable String bookID) {
+        bookService.deleteBook(bookID);
         return ApiResponse.<Void>builder().build();
     }
 
@@ -83,5 +104,4 @@ public class BookController {
                 .result(bookCopies)
                 .build();
     }
-
 }

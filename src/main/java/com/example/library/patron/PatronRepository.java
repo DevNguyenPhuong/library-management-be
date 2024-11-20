@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PatronRepository extends JpaRepository<Patron, String>, JpaSpecificationExecutor<Patron> {
     Page<Patron> findByNameContainingIgnoreCaseOrIdContainingIgnoreCase(String name, String id, Pageable pageable);
+    boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
 }

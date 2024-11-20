@@ -24,6 +24,11 @@ public class Patron extends Person {
     @Enumerated(EnumType.STRING)
     PatronStatus status;
 
+    @Column(unique = true)
+    String email;
+
+    @Column(nullable = false)
+    int deposit;
+
     LocalDate membershipDate;
-    LocalDate membershipEndDate;
 }

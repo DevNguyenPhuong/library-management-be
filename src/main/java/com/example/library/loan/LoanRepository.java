@@ -18,6 +18,7 @@ import java.util.List;
 public interface LoanRepository extends JpaRepository<Loan, String>, JpaSpecificationExecutor<Loan> {
     Integer countByPatronAndStatus(Patron patron, LoanStatus Status);
     List<Loan> findByPatronAndStatus(Patron patron, LoanStatus Status);
+    List<Loan>  findAllByPatronId(String patronId);
 
     boolean existsByPatronAndStatusAndDueDateBefore(
             Patron patron,

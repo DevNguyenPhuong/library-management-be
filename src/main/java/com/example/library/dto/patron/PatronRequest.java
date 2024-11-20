@@ -23,7 +23,12 @@ public class PatronRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String phone;
 
+    @NotBlank(message = "FIELD_REQUIRED")
+    String email;
+
     Gender gender;
+
+    Integer deposit;
 
     PatronStatus status;
 

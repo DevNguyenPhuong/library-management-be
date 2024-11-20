@@ -2,6 +2,7 @@ package com.example.library.bookCopy;
 
 import com.example.library.book.Book;
 import com.example.library.category.Category;
+import com.example.library.constant.BookCopyStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,6 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, String>, Jpa
     Page<BookCopy> findByBookIdAndIdContainingIgnoreCase(
             String bookId, String id, Pageable pageable);
 
-
+    long countByBookIdAndStatus(String bookId, BookCopyStatus status);
+    void deleteAllByBookId(String bookId);
 }

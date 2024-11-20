@@ -8,10 +8,12 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface PatronMapper {
+
     Patron toPatron(PatronRequest request);
 
     @Mapping(target = "currentlyBorrowed", ignore = true)
     PatronResponse toPatronResponse(Patron patron);
+
 
 
     void updatePatron(@MappingTarget Patron patron, PatronRequest request);

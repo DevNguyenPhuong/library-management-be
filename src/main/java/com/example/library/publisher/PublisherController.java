@@ -50,7 +50,7 @@ public class PublisherController {
 
     @DeleteMapping("/{publisherID}")
     ApiResponse<Void> delete(@PathVariable String publisherID) {
-        publisherService.delete(publisherID);
+        publisherService.deletePublisher(publisherID);
         return ApiResponse.<Void>builder().build();
     }
 }

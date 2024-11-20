@@ -23,5 +23,5 @@ public class BookResponse {
     PublisherSimpleResponse publisher;
     Set<AuthorSimpleResponse> authors;
     Set<CategorySimpleResponse> categories;
-   //  String imagePath;
+    String imageUrl;
 }

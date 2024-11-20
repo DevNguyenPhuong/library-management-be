@@ -15,18 +15,20 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-//    String password;
+    Gender gender;
 
-    @NotBlank(message = "FIELD_REQUIRED")
+
     String name;
 
-    @NotBlank(message = "FIELD_REQUIRED")
     String phone;
-
-    Gender gender;
 
     @DobConstraint(min = 5, message = "INVALID_DOB")
     LocalDate dob;
 
     List<String> roles;
+
+    // for password
+    String newPassword;
+    String oldPassword;
+    String confirmPassword;
 }

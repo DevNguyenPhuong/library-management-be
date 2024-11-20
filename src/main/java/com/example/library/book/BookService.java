@@ -1,5 +1,9 @@
 package com.example.library.book;
 
+import com.example.library.author.AuthorService;
+import com.example.library.bookCopy.BookCopyRepository;
+import com.example.library.category.CategoryService;
+import com.example.library.constant.BookCopyStatus;
 import com.example.library.dto.book.BookRequest;
 import com.example.library.dto.book.BookResponse;
 import com.example.library.author.Author;
@@ -8,10 +12,8 @@ import com.example.library.image.ImageService;
 import com.example.library.publisher.Publisher;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
-import com.example.library.author.AuthorRepository;
-import com.example.library.category.CategoryRepository;
-import com.example.library.publisher.PublisherRepository;
-import jakarta.persistence.criteria.Predicate;
+import com.example.library.publisher.PublisherService;
+import com.example.library.validator.ImageValidator;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,101 +37,36 @@ import java.util.Set;
 public class BookService {
     BookRepository bookRepository;
     BookMapper bookMapper;
-    PublisherRepository publisherRepository;
-    AuthorRepository authorRepository;
-    CategoryRepository categoryRepository;
+    PublisherService publisherService;
+    CategoryService categoryService;
+    AuthorService authorService;
+    BookCopyRepository bookCopyRepository;
     ImageService imageService;
+    ImageValidator imageValidator;
 
-    public BookResponse create(BookRequest request) {
+    static String BOOKS_FOLDER = "books";
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public BookResponse createBook(BookRequest request, MultipartFile image) {
+        if(bookRepository.existsByIsbn(request.getIsbn())){
+            throw new AppException(ErrorCode.ISBN_ALREADY_EXISTS);
+        }
         Book book = bookMapper.toBook(request);
-
-        // Handle image upload if present
-//        if (request.getImage() != null && !request.getImage().isEmpty()) {
-//            String imagePath = imageService.storeBookImage(request.getImage());
-//            book.setImagePath(imagePath);
-//        }
-
-        // Set publisher
-        Publisher publisher = publisherRepository.findById(request.getPublisher())
-                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND));
-        book.setPublisher(publisher);
-
-        // Set authors
-        Set<Author> authors = new HashSet<>();
-        for (String authorId : request.getAuthors()) {
-            Author author = authorRepository.findById(authorId)
-                    .orElseThrow(() -> new AppException(ErrorCode.AUTHOR_NOT_FOUND));
-            authors.add(author);
-        }
-        book.setAuthors(authors);
-
-        // Set categories
-        Set<Category> categories = new HashSet<>();
-        for (String categoryId : request.getCategories()) {
-            Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-            categories.add(category);
-        }
-        book.setCategories(categories);
-
-        try {
-            book = bookRepository.save(book);
-        } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.BOOK_ALREADY_EXISTS);
-        }
-
-        return bookMapper.toBookResponse(book);
+        enrichBookData(book, request);
+        handleImageUpload(book, image, null, false);
+        return saveBook(book);
     }
 
-    public BookResponse update(BookRequest request, String bookID) {
-        // Retrieve the existing book from the repository
-        Book existingBook = bookRepository.findById(bookID)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-
-        // Update fields from the request
-        existingBook.setTitle(request.getTitle());
-        existingBook.setPublicationYear(request.getPublicationYear());
-        existingBook.setPrice(request.getPrice());
-
-        // Update publisher
-        Publisher publisher = publisherRepository.findById(request.getPublisher())
-                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND));
-        existingBook.setPublisher(publisher);
-
-        // Update authors
-        Set<Author> authors = new HashSet<>();
-        for (String authorId : request.getAuthors()) {
-            Author author = authorRepository.findById(authorId)
-                    .orElseThrow(() -> new AppException(ErrorCode.AUTHOR_NOT_FOUND));
-            authors.add(author);
-        }
-        existingBook.setAuthors(authors);
-
-        // Update categories
-        Set<Category> categories = new HashSet<>();
-        for (String categoryId : request.getCategories()) {
-            Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-            categories.add(category);
-        }
-        existingBook.setCategories(categories);
-
-        // Save the updated book back to the repository
-        try {
-            existingBook = bookRepository.save(existingBook);
-        } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.BOOK_ALREADY_EXISTS);
-        }
-
-        // Return the updated BookResponse
-        return bookMapper.toBookResponse(existingBook);
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public BookResponse updateBook(BookRequest request, String bookId, MultipartFile image) {
+        Book existingBook = findBookById(bookId);
+        bookMapper.updateBook(existingBook, request);
+        enrichBookData(existingBook, request);
+        handleImageUpload(existingBook, image, existingBook.getImageUrl(), request.getIsDeleteImg());
+        return saveBook(existingBook);
     }
 
-    public List<BookResponse> getAll() {
-        var books = bookRepository.findAll();
-        return books.stream().map(bookMapper::toBookResponse).toList();
-    }
-
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public Page<BookResponse> getBooks(String query, Pageable pageable) {
         Page<Book> books;
         if (query == null || query.isEmpty()) {
@@ -138,20 +74,77 @@ public class BookService {
         } else {
             books = bookRepository.findByTitleContainingIgnoreCaseOrAuthors_NameContainingIgnoreCase(query, query, pageable);
         }
-        return books.map(bookMapper::toBookResponse); // Convert to BookResponse
+        return books.map(bookMapper::toBookResponse);
     }
 
-
-    public BookResponse getDetails(String bookID) {
-        Book book = bookRepository.findById(bookID)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+    public BookResponse getBook(String bookId) {
+        Book book = findBookById(bookId);
         return bookMapper.toBookResponse(book);
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public void deleteBook(String bookId) {
+        Book book = findBookById(bookId);
+        long borrowedCopies = bookCopyRepository.countByBookIdAndStatus(bookId, BookCopyStatus.BORROWED);
+        if (borrowedCopies > 0)
+            throw new AppException(ErrorCode.BOOK_HAS_BORROWED_COPIES);
+        if(!Objects.equals(book.getImageUrl(), ""))
+            imageService.deleteImage(book.getImageUrl(), "books");
 
-
-    public void delete(String bookID) {
-        bookRepository.deleteById(bookID);
+        bookCopyRepository.deleteAllByBookId(bookId);
+        bookRepository.delete(book);
     }
 
+    private void enrichBookData(Book book, BookRequest request) {
+        setPublisher(book, request.getPublisher());
+        setAuthors(book, request.getAuthors());
+        setCategories(book, request.getCategories());
+    }
+
+    private void setPublisher(Book book, String publisherId) {
+        book.setPublisher(publisherService.findPublisherById(publisherId));
+    }
+
+    private void setAuthors(Book book, Set<String> authorIds) {
+        book.setAuthors(authorIds.stream()
+                .map(authorService::findAuthorById)
+                .collect(Collectors.toSet()));
+    }
+
+    private void setCategories(Book book, Set<String> categoryIds) {
+        book.setCategories(categoryIds.stream()
+                .map(categoryService::findCategoryById)
+                .collect(Collectors.toSet()));
+    }
+
+    private void handleImageUpload(Book book, MultipartFile image, String existingImageUrl, Boolean isDeleteImg) {
+        if (image != null && !image.isEmpty()) {
+            if (existingImageUrl != null) {
+                imageService.deleteImage(existingImageUrl, BOOKS_FOLDER);
+            }
+            imageValidator.validate(image);
+            String imageName = imageService.storeImage(image, BOOKS_FOLDER);
+            book.setImageUrl(imageName);
+        }
+        else {
+            if(isDeleteImg) {
+                imageService.deleteImage(book.getImageUrl(), BOOKS_FOLDER);
+                book.setImageUrl("");
+            }
+        }
+    }
+
+    private BookResponse saveBook(Book book) {
+        try {
+            book = bookRepository.save(book);
+            return bookMapper.toBookResponse(book);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.BOOK_ALREADY_EXISTS);
+        }
+    }
+
+    public Book findBookById(String bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+    }
 }

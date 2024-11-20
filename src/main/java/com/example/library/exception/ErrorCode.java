@@ -16,15 +16,25 @@ public enum ErrorCode {
 
     // 400xxx - Validation errors
     INVALID_INPUT(400100, "Invalid input", HttpStatus.BAD_REQUEST),
-    INVALID_USERNAME(400101, "Username must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    INVALID_PASSWORD(400102, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    INVALID_DOB(400103, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
+    INVALID_USERNAME(400101, "Username must be at least 8 characters", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(400102, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
+    INVALID_DOB(400103, "Your age must be at least 5", HttpStatus.BAD_REQUEST),
     INVALID_PATRON_ID(400104, "Patron ID must be exactly 12 characters", HttpStatus.BAD_REQUEST),
     INVALID_PUBLICATION_YEAR(400105, "Publication year only fromm 1000 to now", HttpStatus.BAD_REQUEST),
     INVALID_COPIES(400106, "At least one copies should be created", HttpStatus.BAD_REQUEST),
     INVALID_BORROWED_BOOK(400107, "Borrowed book should between 0 and 5", HttpStatus.BAD_REQUEST),
-    FIELD_REQUIRED(400200, "{field} cannot be empty", HttpStatus.BAD_REQUEST),
-    POSITIVE_REQUIRED(400201, "{field} must be positive", HttpStatus.BAD_REQUEST),
+    FIELD_REQUIRED(400200, "value cannot be empty", HttpStatus.BAD_REQUEST),
+    POSITIVE_REQUIRED(400201, "value must be positive", HttpStatus.BAD_REQUEST),
+    IMAGE_SIZE_TOO_LARGE(400202, "Image size too large", HttpStatus.BAD_REQUEST),
+    INVALID_IMAGE_TYPE(400203, "Invalid image type", HttpStatus.BAD_REQUEST),
+    CANNOT_STORE_EMPTY_IMG(400204, "Cannot store empty image", HttpStatus.BAD_REQUEST),
+    FAIL_STORE_IMG(400205, "Fail to store image", HttpStatus.BAD_REQUEST),
+    FAIL_DELETE_IMG(400206, "Fail to delete image", HttpStatus.BAD_REQUEST),
+    FAIL_CREATE_DIR(400207, "Fail to create directory", HttpStatus.BAD_REQUEST),
+    FAIL_READ_IMG(400208, "Fail to read image", HttpStatus.BAD_REQUEST),
+    INVALID_CURRENT_PASSWORD(400209, "Invalid current password", HttpStatus.BAD_REQUEST),
+    PASSWORD_MISMATCH(400210, "Password mismatch", HttpStatus.BAD_REQUEST),
+    NEW_PASSWORD_SAME_AS_OLD(400211, "Password same as old", HttpStatus.BAD_REQUEST),
 
 
     // 409xxx - Conflict errors
@@ -34,6 +44,8 @@ public enum ErrorCode {
     CATEGORY_ALREADY_EXISTS(409003, "Category already exists", HttpStatus.CONFLICT),
     PUBLISHER_ALREADY_EXISTS(409004, "Publisher already exists", HttpStatus.CONFLICT),
     PHONE_ALREADY_EXISTS(409005, "Phone already exists", HttpStatus.CONFLICT),
+    EMAIL_ALREADY_EXISTS(409006, "Email already exists", HttpStatus.CONFLICT),
+    ISBN_ALREADY_EXISTS(409007, "ISBN already exists", HttpStatus.CONFLICT),
 
     // 404xxx - Not found errors
     USER_NOT_FOUND(404001, "User not found", HttpStatus.NOT_FOUND),
@@ -45,6 +57,7 @@ public enum ErrorCode {
     BOOK_COPY_NOT_FOUND(404007, "Book copy not found", HttpStatus.NOT_FOUND),
     LOAN_NOT_FOUND(404008, "Loan not found", HttpStatus.NOT_FOUND),
     FINE_NOT_FOUND(404009, "Fine not found", HttpStatus.NOT_FOUND),
+    IMAGE_NOT_FOUND(404010, "Image not found", HttpStatus.NOT_FOUND),
 
     // 422xxx - Precondition/State errors
     BOOK_COPY_NOT_AVAILABLE(422001, "Book copy is not available for borrowing", HttpStatus.UNPROCESSABLE_ENTITY),
@@ -58,6 +71,9 @@ public enum ErrorCode {
     PATRON_HAS_OUTSTANDING_FINES(422009, "Patron has unpaid fines", HttpStatus.UNPROCESSABLE_ENTITY),
     PATRON_HAS_OVERDUE_LOANS(422010, "Patron has overdue loans", HttpStatus.UNPROCESSABLE_ENTITY),
     THIS_LOAN_HAVE_FINE(422011, "Loan already has fine", HttpStatus.UNPROCESSABLE_ENTITY),
+    BOOK_HAS_BORROWED_COPIES(422012, "Book have/has borrowed copies", HttpStatus.UNPROCESSABLE_ENTITY),
+    BOOK_COPY_IS_BEING_BORROWED(422012, "This copy is being borrowed", HttpStatus.UNPROCESSABLE_ENTITY),
+    PATRON_DEPOSIT_IS_TOO_LOW(422013, "Patron's deposit is too low", HttpStatus.UNPROCESSABLE_ENTITY),
     // 5xx Server Errors
     INTERNAL_SERVER_ERROR(500000, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     // 50xxxx - Specific server errors can be added here

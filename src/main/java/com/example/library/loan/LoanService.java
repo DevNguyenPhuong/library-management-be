@@ -1,6 +1,7 @@
 package com.example.library.loan;
 
 import com.example.library.bookCopy.BookCopy;
+import com.example.library.bookCopy.BookCopyService;
 import com.example.library.constant.BookCopyStatus;
 import com.example.library.constant.LoanStatus;
 import com.example.library.constant.PatronStatus;
@@ -23,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,6 +35,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional
 @Slf4j
 public class LoanService {
     LoanRepository loanRepository;
@@ -40,9 +43,10 @@ public class LoanService {
     PatronRepository patronRepository;
     BookCopyRepository bookCopyRepository;
     UserRepository userRepository;
-    private final FineRepository fineRepository;
+    FineRepository fineRepository;
+    BookCopyService bookCopyService;
 
-    @Transactional
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public LoanResponse create(LoanRequest request) {
         BookCopy bookCopy = bookCopyRepository.findById(request.getBookCopyId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
@@ -85,6 +89,11 @@ public class LoanService {
             throw new AppException(ErrorCode.PATRON_MEMBERSHIP_EXPIRED);
         }
 
+        final int LOW_DEPOSIT = 100000;
+        if(patron.getDeposit() <= LOW_DEPOSIT){
+            throw new AppException(ErrorCode.PATRON_DEPOSIT_IS_TOO_LOW);
+        }
+
         // Check for overdue loans
         if (loanRepository.existsByPatronAndStatusAndDueDateBefore(
                 patron,
@@ -93,8 +102,8 @@ public class LoanService {
             throw new AppException(ErrorCode.PATRON_HAS_OVERDUE_LOANS);
         }
     }
-    
-    // Method to create and save the loan
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
     private Loan createLoan(LoanRequest request, BookCopy bookCopy, Patron patron) {
         Loan loan = loanMapper.toLoan(request);
         bookCopy.setStatus(BookCopyStatus.BORROWED);
@@ -109,9 +118,9 @@ public class LoanService {
     }
 
 
-    @Transactional
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public LoanResponse update(LoanRequest request, String loanId) {
-        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+        Loan loan = findLoanById(loanId);
         if(request.getStatus() == LoanStatus.RETURNED) {
             BookCopy bookCopy = bookCopyRepository.findById(request.getBookCopyId()).orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
             bookCopy.setStatus(BookCopyStatus.AVAILABLE);
@@ -122,6 +131,7 @@ public class LoanService {
         return loanMapper.toLoanResponse(loanRepository.save(loan));
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public List<LoanResponse> getLoansByPatron(String patronId) {
         return loanRepository.findAllByPatronIdWithDetails(patronId)
                 .stream()
@@ -129,6 +139,7 @@ public class LoanService {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public LoanMonthlyStat getLoanStatsByMonth(int year, int month) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
@@ -145,12 +156,23 @@ public class LoanService {
         return new LoanMonthlyStat(borrowedCount, returnedCount, overdueCount);
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public void delete(String loanId) {
+        Loan loan = findLoanById(loanId);
+        BookCopy bookCopy = bookCopyService.findById(loan.getBookCopy().getId());
+        bookCopy.setStatus(BookCopyStatus.AVAILABLE);
+        bookCopyRepository.save(bookCopy);
+
         loanRepository.deleteById(loanId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public Page<LoanResponse> getLoans(Pageable pageable) {
         Page<Loan> loans = loanRepository.findAll(pageable);
         return loans.map(loanMapper::toLoanResponse);
+    }
+
+    public  Loan findLoanById(String loanId) {
+        return  loanRepository.findById(loanId).orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
     }
 }

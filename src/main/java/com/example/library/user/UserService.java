@@ -34,26 +34,18 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createUser(UserCreationRequest request) {
-        // Map the request to user entity
         User user = userMapper.toUser(request);
-
-        // Encode password before saving
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Initialize roles set
         Set<Role> roles = new HashSet<>();
 
-        // Add default user role
-        roleRepository.findById(PredefinedRole.USER_ROLE)
-                .ifPresent(roles::add);
 
-        // Add additional roles if specified in the request
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
             roles.addAll(roleRepository.findAllById(request.getRoles()));
         }
 
-        // Set the combined roles
         user.setRoles(roles);
 
         try {
@@ -66,6 +58,7 @@ public class UserService {
     }
 
 
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -75,28 +68,74 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-//    @PostAuthorize("returnObject.username == authentication.name")
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+    public UserResponse updateMe(UserUpdateRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        log.info(username);
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        userMapper.updateUser(currentUser, request);
+
+        try {
+            currentUser = userRepository.save(currentUser);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+        return userMapper.toUserResponse(currentUser);
+    }
+
+    public void updatePassword(UserUpdateRequest request) {
+        // Get current user
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Validate current password
+        if (!passwordEncoder.matches(request.getOldPassword(), currentUser.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_CURRENT_PASSWORD);
+        }
+
+        // Validate password confirmation
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        // Validate new password is different from current
+        if (passwordEncoder.matches(request.getNewPassword(), currentUser.getPassword())) {
+            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        // Update password
+        currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(currentUser);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+        User user = findUserById(userId);
         userMapper.updateUser(user, request);
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
-
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
+
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsersExceptCurrent() {
-        log.info("In method getAllUsersExceptCurrent");
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
 
@@ -106,9 +145,12 @@ public class UserService {
                 .toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse getUser(String id) {
-        return userMapper.toUserResponse(
-                userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+
+    public UserResponse getUser(String userId) {
+        return userMapper.toUserResponse(findUserById(userId));
+    }
+
+    public User findUserById(String userId){
+        return  userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 }

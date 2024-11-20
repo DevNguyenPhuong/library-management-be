@@ -1,5 +1,6 @@
 package com.example.library.bookCopy;
 
+import com.example.library.book.BookService;
 import com.example.library.category.Category;
 import com.example.library.constant.BookCopyStatus;
 import com.example.library.dto.Category.CategoryResponse;
@@ -18,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import java.util.List;
 @Slf4j
 public class BookCopyService {
     BookCopyRepository bookCopyRepository;
-    BookRepository bookRepository;
+    BookService bookService;
     BookCopyMapper bookCopyMapper;
 
     public Page<BookCopyResponse> getBookCopiesByBookId(String bookId, Pageable pageable, String query) {
@@ -43,24 +45,29 @@ public class BookCopyService {
         return bookCopies.map(bookCopyMapper::toBookCopyResponse);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public List<BookCopyResponse> getBooksCopy() {
         var bookCopies = bookCopyRepository.findAll();
         return bookCopies.stream().map(bookCopyMapper::toBookCopyResponse).toList();
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public void delete(String bookCopyId) {
+        BookCopy bookCopy = findById(bookCopyId);
+        if(bookCopy.getStatus() == BookCopyStatus.BORROWED)
+            throw new AppException(ErrorCode.BOOK_COPY_IS_BEING_BORROWED);
         bookCopyRepository.deleteById(bookCopyId);
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public List<BookCopyResponse> createCopies(CreationBookCopiesRequest request) {
-        Book book = bookRepository.findById(request.getBookId())
-                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        Book book = bookService.findBookById(request.getBookId());
 
         List<BookCopy> newCopies = new ArrayList<>();
         for (int i = 0; i < request.getNumberOfCopies(); i++) {
             BookCopy newCopy = BookCopy.builder()
                     .book(book)
-                    .status(BookCopyStatus.AVAILABLE) // Assuming new copies are initially available
+                    .status(BookCopyStatus.AVAILABLE)
                     .build();
             newCopies.add(newCopy);
         }
@@ -71,18 +78,23 @@ public class BookCopyService {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public BookCopyResponse updateBookCopy(String bookCopyId, BookCopyRequest request) {
-        BookCopy bookCopy = bookCopyRepository.findById(bookCopyId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
+        BookCopy bookCopy = findById(bookCopyId);
 
         bookCopyMapper.updateBookCopy(bookCopy, request);
         bookCopy = bookCopyRepository.save(bookCopy);
         return bookCopyMapper.toBookCopyResponse(bookCopy);
     }
 
-    public BookCopyResponse getDetails(String bookCopiesId) {
-            BookCopy bookCopy = bookCopyRepository.findById(bookCopiesId)
-                    .orElseThrow(() ->  new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public BookCopyResponse getDetails(String bookCopyId) {
+            BookCopy bookCopy = findById(bookCopyId);
             return bookCopyMapper.toBookCopyResponse(bookCopy);
+    }
+
+    public BookCopy findById(String bookCopyId) {
+        return  bookCopyRepository.findById(bookCopyId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_COPY_NOT_FOUND));
     }
 }

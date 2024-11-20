@@ -16,7 +16,9 @@ public class PatronResponse {
     String id;
     String name;
     String phone;
+    String email;
     Gender gender;
+    Integer deposit;
     PatronStatus status;
     Integer currentlyBorrowed;
     LocalDate membershipDate;

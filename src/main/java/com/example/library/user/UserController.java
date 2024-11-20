@@ -49,11 +49,20 @@ public class UserController {
                 .build();
     }
 
-    @DeleteMapping("/{userId}")
-    ApiResponse<String> deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
-        return ApiResponse.<String>builder().result("User has been deleted").build();
+    @PutMapping("/update-me")
+    ApiResponse<UserResponse> updateMe(@RequestBody @Valid UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateMe(request))
+                .build();
     }
+
+    @PutMapping("/update-password")
+    ApiResponse<Void> updateMyPassword(@RequestBody @Valid UserUpdateRequest request) {
+        userService.updatePassword(request);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
 
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody @Valid UserUpdateRequest request) {
@@ -61,4 +70,11 @@ public class UserController {
                 .result(userService.updateUser(userId, request))
                 .build();
     }
+
+    @DeleteMapping("/{userId}")
+    ApiResponse<String> deleteUser(@PathVariable String userId) {
+        userService.deleteUser(userId);
+        return ApiResponse.<String>builder().result("User has been deleted").build();
+    }
+
 }

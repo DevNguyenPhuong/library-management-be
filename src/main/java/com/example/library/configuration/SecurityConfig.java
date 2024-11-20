@@ -34,8 +34,8 @@ public class SecurityConfig {
         // Apply CORS configuration
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll()
+        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                 .anyRequest()
                 .authenticated());
 

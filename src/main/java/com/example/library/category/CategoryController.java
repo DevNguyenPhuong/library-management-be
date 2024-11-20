@@ -52,7 +52,7 @@ public class CategoryController {
 
     @DeleteMapping("/{categoryID}")
     ApiResponse<Void> delete(@PathVariable String categoryID) {
-        categoryService.delete(categoryID);
+        categoryService.deleteCategory(categoryID);
         return ApiResponse.<Void>builder().build();
     }
 
