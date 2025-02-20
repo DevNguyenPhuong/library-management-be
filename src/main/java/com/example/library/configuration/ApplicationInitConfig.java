@@ -45,14 +45,19 @@ public class ApplicationInitConfig {
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
 
                 Role librarianRole = roleRepository.save(Role.builder()
-                        .name(PredefinedRole.LIBRARIAN_ROLE)
+                        .name(PredefinedRole.LIBRARIAN.getRoleName())
                         .description("Librarian role")
                         .build());
 
 
                 Role adminRole = roleRepository.save(Role.builder()
-                        .name(PredefinedRole.ADMIN_ROLE)
+                        .name(PredefinedRole.ADMIN.getRoleName())
                         .description("Admin role")
+                        .build());
+
+                Role PatronRole = roleRepository.save(Role.builder()
+                        .name(PredefinedRole.PATRON.getRoleName())
+                        .description("Patron role")
                         .build());
 
                 var roles = new HashSet<Role>();

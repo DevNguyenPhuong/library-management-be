@@ -14,5 +14,4 @@ public interface BookCopyMapper {
 
     void updateBookCopy(@MappingTarget BookCopy bookCopy, BookCopyRequest bookCopyRequest);
 
-
 }

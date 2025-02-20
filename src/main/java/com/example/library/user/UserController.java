@@ -1,6 +1,7 @@
 package com.example.library.user;
 
 import com.example.library.dto.user.UserCreationRequest;
+import com.example.library.dto.user.UserUpdatePasswordRequest;
 import com.example.library.dto.user.UserUpdateRequest;
 import com.example.library.dto.Exception.ApiResponse;
 import com.example.library.dto.user.UserResponse;
@@ -57,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/update-password")
-    ApiResponse<Void> updateMyPassword(@RequestBody @Valid UserUpdateRequest request) {
+    ApiResponse<Void> updateMyPassword(@RequestBody @Valid UserUpdatePasswordRequest request) {
         userService.updatePassword(request);
         return ApiResponse.<Void>builder()
                 .build();

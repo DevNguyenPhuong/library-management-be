@@ -1,34 +1,49 @@
 package com.example.library.patron;
 
-import com.example.library.Person.Person;
 import com.example.library.constant.Gender;
 import com.example.library.constant.PatronStatus;
+import com.example.library.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Patron extends Person {
+public class Patron {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     protected String id;
 
-    @Enumerated(EnumType.STRING)
-    PatronStatus status;
+    @Column(nullable = false, unique = true)
+    String personalId;
 
-    @Column(unique = true)
-    String email;
+    String name;
+
+    LocalDate dob;
+
+    @Enumerated(EnumType.STRING)
+    Gender gender;
 
     @Column(nullable = false)
     int deposit;
 
+    @Column(unique = true)
+    String phone;
+
+    @Column(unique = true)
+    String email;
+
     LocalDate membershipDate;
+
+    @Enumerated(EnumType.STRING)
+    PatronStatus status;
+
+    @OneToOne
+    User user;
 }

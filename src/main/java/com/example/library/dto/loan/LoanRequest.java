@@ -29,5 +29,5 @@ public class LoanRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String bookCopyId;
     @NotBlank(message = "FIELD_REQUIRED")
-    String userId;
+    String librarianId;
 }

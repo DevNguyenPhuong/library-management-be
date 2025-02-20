@@ -2,6 +2,8 @@ package com.example.library.role;
 
 import com.example.library.dto.role.RoleRequest;
 import com.example.library.dto.role.RoleResponse;
+import com.example.library.exception.AppException;
+import com.example.library.exception.ErrorCode;
 import com.example.library.permission.PermissionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,11 @@ public class RoleService {
 
         role = roleRepository.save(role);
         return roleMapper.toRoleResponse(role);
+    }
+
+    public RoleResponse findById(String id) {
+      Role role =  roleRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+      return roleMapper.toRoleResponse(role);
     }
 
     public List<RoleResponse> getAll() {

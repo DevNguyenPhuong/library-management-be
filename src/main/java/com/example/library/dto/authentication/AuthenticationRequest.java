@@ -1,5 +1,7 @@
 package com.example.library.dto.authentication;
 
+import com.example.library.constant.PredefinedRole;
+import com.example.library.role.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,5 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationRequest {
     String username;
     String password;
+    PredefinedRole role;
 }
 

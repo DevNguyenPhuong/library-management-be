@@ -1,13 +1,21 @@
 package com.example.library.patron;
 
 import com.example.library.constant.LoanStatus;
-import com.example.library.dto.patron.PatronRequest;
+import com.example.library.constant.PatronStatus;
+import com.example.library.constant.PredefinedRole;
+import com.example.library.dto.patron.PatronCreationRequest;
 import com.example.library.dto.patron.PatronResponse;
+import com.example.library.dto.patron.PatronUpdateRequest;
+import com.example.library.dto.user.UserCreationRequest;
+import com.example.library.dto.user.UserResponse;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
 import com.example.library.loan.Loan;
 import com.example.library.loan.LoanRepository;
 import com.example.library.loan.LoanService;
+import com.example.library.user.User;
+import com.example.library.user.UserRepository;
+import com.example.library.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,38 +42,49 @@ public class PatronService {
     PatronRepository patronRepository;
     PatronMapper patronMapper;
     LoanRepository loanRepository;
-    private final LoanService loanService;
+    LoanService loanService;
+    UserRepository userRepository;
+    UserService userService;
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    @PreAuthorize("hasRole('LIBRARIAN')")
-    public PatronResponse create(PatronRequest request) {
+
+    public PatronResponse create(PatronCreationRequest request) {
         if(patronRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
 
         if(patronRepository.existsByPhone(request.getPhone()))
             throw new AppException(ErrorCode.PHONE_ALREADY_EXISTS);
 
-        Patron patron = patronMapper.toPatron(request);
+        if(patronRepository.existsByPersonalId(request.getPersonalId()))
+            throw new AppException(ErrorCode.PERSONAL_ID_ALREADY_EXISTS);
 
-        patron.setDeposit(650000);
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if(patronRepository.existsByUser(user))
+            throw new AppException(ErrorCode.PATRON_ALREADY_EXISTS);
+
+        Patron patron = patronMapper.toPatron(request);
+        patron.setDeposit(0);
+        patron.setStatus(PatronStatus.INACTIVE);
+        patron.setUser(user);
 
         try {
             patron = patronRepository.save(patron);
         }
         catch (DataIntegrityViolationException e) {
-            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.PATRON_ALREADY_EXISTS);
         }
-
         return patronMapper.toPatronResponse(patron);
     }
 
-    @PreAuthorize("hasRole('LIBRARIAN')")
-    public List<PatronResponse> getAll() {
-        var patrons  = patronRepository.findAll();
-        return patrons.stream().map(patronMapper::toPatronResponse).toList();
+    public UserResponse register(UserCreationRequest request) {
+        return userService.registerForPatron(request, PredefinedRole.PATRON);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
@@ -85,8 +105,46 @@ public class PatronService {
         return this.toPatronResponse(patron);
     }
 
+
+    @PreAuthorize("hasRole('PATRON')")
+    public PatronResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if(!patronRepository.existsByUser(user))
+            return PatronResponse.builder().build();
+
+        Patron patron = patronRepository.findByUser(user).orElseThrow(() -> new AppException(ErrorCode.PATRON_NOT_FOUND));
+
+        return patronMapper.toPatronResponse(patron);
+    }
+
+    @PreAuthorize("hasRole('PATRON')")
+    public PatronResponse updateMe(PatronUpdateRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Patron currentPatron = patronRepository.findByUser(user)
+                .orElseThrow(() -> new AppException(ErrorCode.PATRON_NOT_FOUND));
+
+        patronMapper.updatePatron(currentPatron, request);
+
+        try {
+            currentPatron = patronRepository.save(currentPatron);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+        return patronMapper.toPatronResponse(currentPatron);
+    }
+
+
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public PatronResponse updatePatron(String patronId, PatronRequest request) {
+    public PatronResponse updatePatron(String patronId, PatronUpdateRequest request) {
         Patron patron = findPatronById(patronId);
         patronMapper.updatePatron(patron, request);
         return patronMapper.toPatronResponse(updatePatron(patron));
@@ -107,6 +165,7 @@ public class PatronService {
         }
 
         patronRepository.deleteById(patronId);
+        userRepository.delete(patron.getUser());
     }
 
 
@@ -115,7 +174,7 @@ public class PatronService {
     }
 
     public Patron findPatronById(String id) {
-        return patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return patronRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PATRON_NOT_FOUND));
     }
 
     private PatronResponse toPatronResponse(Patron patron) {

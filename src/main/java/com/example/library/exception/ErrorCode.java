@@ -16,7 +16,7 @@ public enum ErrorCode {
 
     // 400xxx - Validation errors
     INVALID_INPUT(400100, "Invalid input", HttpStatus.BAD_REQUEST),
-    INVALID_USERNAME(400101, "Username must be at least 8 characters", HttpStatus.BAD_REQUEST),
+    INVALID_USERNAME(400101, "Username must be at least 5 characters", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(400102, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
     INVALID_DOB(400103, "Your age must be at least 5", HttpStatus.BAD_REQUEST),
     INVALID_PATRON_ID(400104, "Patron ID must be exactly 12 characters", HttpStatus.BAD_REQUEST),
@@ -46,6 +46,12 @@ public enum ErrorCode {
     PHONE_ALREADY_EXISTS(409005, "Phone already exists", HttpStatus.CONFLICT),
     EMAIL_ALREADY_EXISTS(409006, "Email already exists", HttpStatus.CONFLICT),
     ISBN_ALREADY_EXISTS(409007, "ISBN already exists", HttpStatus.CONFLICT),
+    PATRON_ALREADY_EXISTS(409008, "Patron already exists", HttpStatus.CONFLICT),
+    LIBRARIAN_ALREADY_EXISTS(409009, "Patron already exists", HttpStatus.CONFLICT),
+    PERSONAL_ID_ALREADY_EXISTS(409010, "Personal ID already exists", HttpStatus.CONFLICT),
+    SESSION_ALREADY_EXISTS(409011, "Session already exists", HttpStatus.CONFLICT),
+    ITEM_ALREADY_EXISTS(409012, "Item already exists", HttpStatus.CONFLICT),
+
 
     // 404xxx - Not found errors
     USER_NOT_FOUND(404001, "User not found", HttpStatus.NOT_FOUND),
@@ -58,6 +64,9 @@ public enum ErrorCode {
     LOAN_NOT_FOUND(404008, "Loan not found", HttpStatus.NOT_FOUND),
     FINE_NOT_FOUND(404009, "Fine not found", HttpStatus.NOT_FOUND),
     IMAGE_NOT_FOUND(404010, "Image not found", HttpStatus.NOT_FOUND),
+    LIBRARIAN_NOT_FOUND(404011, "Librarian not found", HttpStatus.NOT_FOUND),
+    SESSION_NOT_FOUND(404012, "Session not found", HttpStatus.NOT_FOUND),
+    ITEMS_NOT_FOUND(404013, "Items not found", HttpStatus.NOT_FOUND),
 
     // 422xxx - Precondition/State errors
     BOOK_COPY_NOT_AVAILABLE(422001, "Book copy is not available for borrowing", HttpStatus.UNPROCESSABLE_ENTITY),

@@ -1,5 +1,6 @@
 package com.example.library.loan;
 
+import com.example.library.Libarian.LibrarianRepository;
 import com.example.library.bookCopy.BookCopy;
 import com.example.library.bookCopy.BookCopyService;
 import com.example.library.constant.BookCopyStatus;
@@ -45,6 +46,7 @@ public class LoanService {
     UserRepository userRepository;
     FineRepository fineRepository;
     BookCopyService bookCopyService;
+    private final LibrarianRepository librarianRepository;
 
     @PreAuthorize("hasRole('LIBRARIAN')")
     public LoanResponse create(LoanRequest request) {
@@ -112,7 +114,7 @@ public class LoanService {
         // Set relationships and save the loan
         loan.setBookId(bookCopy.getBook().getId());
         loan.setBookCopy(bookCopy);
-        loan.setUser(userRepository.findById(request.getUserId()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+        loan.setLibrarian(librarianRepository.findById(request.getLibrarianId()).orElseThrow(() -> new AppException(ErrorCode.LIBRARIAN_NOT_FOUND)));
         loan.setPatron(patron);
         return loanRepository.save(loan);
     }

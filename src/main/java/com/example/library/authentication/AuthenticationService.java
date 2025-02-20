@@ -1,11 +1,16 @@
 package com.example.library.authentication;
 
+import com.example.library.constant.PredefinedRole;
 import com.example.library.dto.authentication.AuthenticationRequest;
 import com.example.library.dto.authentication.IntrospectRequest;
 import com.example.library.dto.authentication.LogoutRequest;
 import com.example.library.dto.authentication.RefreshRequest;
 import com.example.library.dto.authentication.AuthenticationResponse;
 import com.example.library.dto.authentication.IntrospectResponse;
+import com.example.library.patron.PatronRepository;
+import com.example.library.role.Role;
+import com.example.library.role.RoleRepository;
+import com.example.library.role.RoleService;
 import com.example.library.user.User;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
@@ -66,9 +71,10 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         var user = userRepository
                 .findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_ALREADY_EXISTS));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -81,10 +87,6 @@ public class AuthenticationService {
                 .authenticated(true)
                 .id(user.getId())
                 .username(user.getUsername())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .dob(user.getDob())
-                .gender(user.getGender())
                 .roles(user.getRoles())
                 .expiresIn(VALID_DURATION)
                 .build();
@@ -121,6 +123,7 @@ public class AuthenticationService {
 
         var user =
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
 
         var token = generateToken(user);
 

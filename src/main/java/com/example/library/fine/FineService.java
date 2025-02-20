@@ -70,8 +70,9 @@ public class FineService {
     }
 
 
-    //@Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
-    @Scheduled(cron = "0 * * * * ?")
+
+  //  @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
     public void processOverdueFines() {
         log.info("Starting automatic fine deduction process");
         LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);

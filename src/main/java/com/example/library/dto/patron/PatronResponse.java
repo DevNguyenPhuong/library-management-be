@@ -17,6 +17,7 @@ public class PatronResponse {
     String name;
     String phone;
     String email;
+    String personalId;
     Gender gender;
     Integer deposit;
     PatronStatus status;

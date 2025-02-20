@@ -62,4 +62,30 @@ public class MailService {
             throw new RuntimeException("Failed to send email", e);
         }
     }
+
+    public void SendPasswordNotification(String toEmail, String id, String name, String password) {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(senderEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Library credentials Notice - Password receive");
+
+            Context context = new Context();
+            context.setVariable("id", id);
+            context.setVariable("name", name);
+            context.setVariable("password", password);
+
+            String htmlContent = templateEngine.process("password-notification", context);
+            helper.setText(htmlContent, true);
+
+            emailSender.send(message);
+            log.info("Password notification email sent successfully to: {}", toEmail);
+
+        } catch (MessagingException e) {
+            log.error("Failed to send password notification email to: {}", toEmail, e);
+            throw new RuntimeException("Failed to send email", e);
+        }
+    }
 }

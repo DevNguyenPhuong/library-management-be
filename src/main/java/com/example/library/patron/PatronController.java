@@ -1,10 +1,14 @@
 package com.example.library.patron;
 
-import com.example.library.dto.book.BookResponse;
-import com.example.library.dto.patron.PatronRequest;
+import com.example.library.Shopping_session.ShoppingSessionService;
 import com.example.library.dto.Exception.ApiResponse;
+import com.example.library.dto.ShoppingSession.ShoppingSessionResponse;
 import com.example.library.dto.loan.LoanResponse;
+import com.example.library.dto.patron.PatronCreationRequest;
 import com.example.library.dto.patron.PatronResponse;
+import com.example.library.dto.patron.PatronUpdateRequest;
+import com.example.library.dto.user.UserCreationRequest;
+import com.example.library.dto.user.UserResponse;
 import com.example.library.loan.LoanService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,6 +30,7 @@ import java.util.List;
 public class PatronController {
     PatronService patronService;
     LoanService loanService;
+    private final ShoppingSessionService shoppingSessionService;
 
     @GetMapping
     public ApiResponse<Page<PatronResponse>> getAllPatron(
@@ -48,15 +53,39 @@ public class PatronController {
                 .build();
     }
 
+    @GetMapping("/my-info")
+    ApiResponse<PatronResponse> getCurrentPatronInfo() {
+        return ApiResponse.<PatronResponse>builder()
+                .result(patronService.getMyInfo())
+                .build();
+    }
+
+
+    @PutMapping("/update-me")
+    ApiResponse<PatronResponse> updateMe(@RequestBody @Valid PatronUpdateRequest request) {
+        return ApiResponse.<PatronResponse>builder()
+                .result(patronService.updateMe(request))
+                .build();
+    }
+
+
+    @PostMapping("/register")
+    ApiResponse<UserResponse> createPatron(@RequestBody @Valid UserCreationRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(patronService.register(request))
+                .build();
+    }
+
     @PostMapping
-    ApiResponse<PatronResponse> createPatron(@RequestBody @Valid PatronRequest request) {
+    ApiResponse<PatronResponse> createPersonalInfo(@RequestBody @Valid PatronCreationRequest request) {
         return ApiResponse.<PatronResponse>builder()
                 .result(patronService.create(request))
                 .build();
     }
 
+
     @PutMapping("/{patronId}")
-    ApiResponse<PatronResponse> updatePatron(@PathVariable @Valid String patronId, @RequestBody PatronRequest request) {
+    ApiResponse<PatronResponse> updatePatron(@PathVariable @Valid String patronId, @RequestBody PatronUpdateRequest request) {
         return ApiResponse.<PatronResponse>builder()
                 .result(patronService.updatePatron(patronId, request))
                 .build();
@@ -72,6 +101,13 @@ public class PatronController {
     ApiResponse<List<LoanResponse>> getLoans(@PathVariable String patronId) {
         return ApiResponse.<List<LoanResponse>>builder()
                 .result(loanService.getLoansByPatron(patronId))
+                .build();
+    }
+
+    @GetMapping("/{patronId}/shopping-session")
+    ApiResponse<ShoppingSessionResponse> getShoppingSession(@PathVariable String patronId) {
+        return ApiResponse.<ShoppingSessionResponse>builder()
+                .result(shoppingSessionService.findByPatron(patronId))
                 .build();
     }
 }

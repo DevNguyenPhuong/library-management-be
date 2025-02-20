@@ -1,5 +1,6 @@
 package com.example.library.bookCopy;
 
+import com.example.library.Shopping_session.ShoppingSession;
 import com.example.library.book.Book;
 import com.example.library.constant.BookCopyStatus;
 import jakarta.persistence.*;

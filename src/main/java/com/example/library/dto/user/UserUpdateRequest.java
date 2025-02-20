@@ -17,7 +17,6 @@ import java.util.List;
 public class UserUpdateRequest {
     Gender gender;
 
-
     String name;
 
     String phone;
@@ -26,9 +25,4 @@ public class UserUpdateRequest {
     LocalDate dob;
 
     List<String> roles;
-
-    // for password
-    String newPassword;
-    String oldPassword;
-    String confirmPassword;
 }

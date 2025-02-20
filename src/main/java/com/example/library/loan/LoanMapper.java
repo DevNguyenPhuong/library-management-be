@@ -1,6 +1,8 @@
 package com.example.library.loan;
 
+import com.example.library.Libarian.Librarian;
 import com.example.library.bookCopy.BookCopyMapper;
+import com.example.library.dto.Librarian.LibrarianSimpleResponse;
 import com.example.library.dto.loan.LoanRequest;
 import com.example.library.dto.loan.LoanResponse;
 import com.example.library.dto.patron.PatronSimpleResponse;
@@ -19,15 +21,14 @@ public interface LoanMapper {
     @Mapping(target = "id", ignore = true)
     Loan toLoan(LoanRequest loanRequest);
 
-
     @Mapping(target = "bookCopy", source = "loan.bookCopy")
     @Mapping(target = "patron", qualifiedByName = "toPatronSimpleResponse")
-    @Mapping(target = "user", qualifiedByName = "toUserSimpleResponse")
+    @Mapping(target = "librarian", qualifiedByName = "toLibrarianSimpleResponse")
     LoanResponse toLoanResponse(Loan loan);
 
     @Mapping(target = "bookId", ignore = true)
     @Mapping(target="bookCopy", ignore = true)
-    @Mapping(target="user", ignore = true)
+    @Mapping(target="librarian", ignore = true)
     @Mapping(target="patron", ignore = true)
     @Mapping(target = "fine", ignore = true)
     @Mapping(target="id", ignore = true)
@@ -38,8 +39,8 @@ public interface LoanMapper {
         return new PatronSimpleResponse(patron.getId(), patron.getName());
     }
 
-    @Named("toUserSimpleResponse")
-    default UserSimpleResponse toUserSimpleResponse(User user) {
-        return new UserSimpleResponse(user.getId(), user.getName());
+    @Named("toLibrarianSimpleResponse")
+    default LibrarianSimpleResponse toLibrarianSimpleResponse(Librarian librarian) {
+        return new LibrarianSimpleResponse(librarian.getId(), librarian.getName());
     }
 }

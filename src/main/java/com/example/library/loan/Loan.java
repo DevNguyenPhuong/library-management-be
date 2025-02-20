@@ -1,10 +1,10 @@
 package com.example.library.loan;
 
+import com.example.library.Libarian.Librarian;
 import com.example.library.bookCopy.BookCopy;
 import com.example.library.constant.LoanStatus;
 import com.example.library.fine.Fine;
 import com.example.library.patron.Patron;
-import com.example.library.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +36,7 @@ public class Loan {
     BookCopy bookCopy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User user;
+    Librarian librarian;
 
     @ManyToOne(fetch = FetchType.LAZY)
     Patron patron;

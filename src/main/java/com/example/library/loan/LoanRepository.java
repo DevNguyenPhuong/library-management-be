@@ -19,6 +19,7 @@ public interface LoanRepository extends JpaRepository<Loan, String>, JpaSpecific
     Integer countByPatronAndStatus(Patron patron, LoanStatus Status);
     List<Loan> findByPatronAndStatus(Patron patron, LoanStatus Status);
     List<Loan>  findAllByPatronId(String patronId);
+    List<Loan>  findAllByLibrarianId(String patronId);
 
     boolean existsByPatronAndStatusAndDueDateBefore(
             Patron patron,
@@ -30,7 +31,7 @@ public interface LoanRepository extends JpaRepository<Loan, String>, JpaSpecific
     @Query("SELECT l FROM Loan l " +
             "LEFT JOIN FETCH l.bookCopy bc " +
             "LEFT JOIN FETCH bc.book " +
-            "LEFT JOIN FETCH l.user " +
+            "LEFT JOIN FETCH l.librarian " +
             "LEFT JOIN FETCH l.patron " +
             "LEFT JOIN FETCH l.fine " +
             "WHERE l.patron.id = :patronId")

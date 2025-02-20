@@ -6,10 +6,7 @@ import com.example.library.category.CategoryService;
 import com.example.library.constant.BookCopyStatus;
 import com.example.library.dto.book.BookRequest;
 import com.example.library.dto.book.BookResponse;
-import com.example.library.author.Author;
-import com.example.library.category.Category;
 import com.example.library.image.ImageService;
-import com.example.library.publisher.Publisher;
 import com.example.library.exception.AppException;
 import com.example.library.exception.ErrorCode;
 import com.example.library.publisher.PublisherService;
@@ -66,7 +63,7 @@ public class BookService {
         return saveBook(existingBook);
     }
 
-    @PreAuthorize("hasRole('LIBRARIAN')")
+
     public Page<BookResponse> getBooks(String query, Pageable pageable) {
         Page<Book> books;
         if (query == null || query.isEmpty()) {
@@ -129,8 +126,8 @@ public class BookService {
         else {
             if(isDeleteImg) {
                 imageService.deleteImage(book.getImageUrl(), BOOKS_FOLDER);
-                book.setImageUrl("");
             }
+            book.setImageUrl("");
         }
     }
 

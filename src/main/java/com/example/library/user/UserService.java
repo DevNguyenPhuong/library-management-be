@@ -2,6 +2,7 @@ package com.example.library.user;
 
 import com.example.library.constant.PredefinedRole;
 import com.example.library.dto.user.UserCreationRequest;
+import com.example.library.dto.user.UserUpdatePasswordRequest;
 import com.example.library.dto.user.UserUpdateRequest;
 import com.example.library.dto.user.UserResponse;
 import com.example.library.role.Role;
@@ -41,11 +42,27 @@ public class UserService {
 
         Set<Role> roles = new HashSet<>();
 
-
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
             roles.addAll(roleRepository.findAllById(request.getRoles()));
         }
 
+        user.setRoles(roles);
+
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+        return userMapper.toUserResponse(user);
+    }
+
+    public UserResponse registerForPatron(UserCreationRequest request, PredefinedRole role) {
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findById(role.getRoleName()).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND)));
         user.setRoles(roles);
 
         try {
@@ -88,7 +105,7 @@ public class UserService {
         return userMapper.toUserResponse(currentUser);
     }
 
-    public void updatePassword(UserUpdateRequest request) {
+    public void updatePassword(UserUpdatePasswordRequest request) {
         // Get current user
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

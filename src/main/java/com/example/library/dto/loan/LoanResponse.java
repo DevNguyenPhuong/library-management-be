@@ -2,6 +2,7 @@ package com.example.library.dto.loan;
 
 import com.example.library.bookCopy.BookCopy;
 import com.example.library.constant.LoanStatus;
+import com.example.library.dto.Librarian.LibrarianSimpleResponse;
 import com.example.library.dto.bookCopy.BookCopyResponse;
 import com.example.library.dto.patron.PatronSimpleResponse;
 import com.example.library.dto.user.UserSimpleResponse;
@@ -25,6 +26,6 @@ public class LoanResponse {
 
     PatronSimpleResponse patron;
     BookCopyResponse bookCopy;
-    UserSimpleResponse user;
+    LibrarianSimpleResponse librarian;
 
 }

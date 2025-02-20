@@ -15,23 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreationRequest {
-    @Size(min = 8, message = "INVALID_USERNAME")
+public class UserCreationRequest  {
+    @Size(min = 5, message = "INVALID_USERNAME")
     String username;
 
-    @Size(min = 8, message = "INVALID_PASSWORD")
+    @Size(min = 5, message = "INVALID_PASSWORD")
     String password;
-
-    @NotBlank(message = "FIELD_REQUIRED")
-    String name;
-
-    @NotBlank(message = "FIELD_REQUIRED")
-    String phone;
-
-    Gender gender;
-
-    @DobConstraint(min = 10, message = "INVALID_DOB")
-    LocalDate dob;
 
     List<String> roles;
 }
